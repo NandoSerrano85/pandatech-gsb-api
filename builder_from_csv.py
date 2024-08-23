@@ -10,22 +10,15 @@ from constants import (
     MK_DPI,
     STD_DPI,
 )
-from gang_sheet_builder_v2 import create_image_gang_sheets
-
 
 def main():
-    order_range = "4634 - 4662"
-    # order_range = "Order 4571"
+    order_range = "PO ParisBerry 08222024"
     type_packs = ['5 Pack', 'Singles']
     tp = type_packs[1]
-    order_csv = "Product Pick List {} - Original.csv".format(order_range)
-    # order_csv = "Product Pick List {} - Order 4571.csv".format(order_range)
-    # order_csv = "Product Pick List {} - MK {}.csv".format(order_range, tp)
-    # order_csv = "Product Pick List {} - Rush 4654.csv".format(order_range)
+    order_csv = "ParisBerry Purchase Order - 08222024 - Original.csv"
     csvFilePath = "/Users/fserrano/Desktop/{}".format(order_csv)
     orderDict = read_local_csv(csvFilePath)
-    # order_range = "Order 4571"
-    All_TYPES = ['DTF', 'MK']
+    All_TYPES = ['UVDTF 16oz']
 
     for t in All_TYPES:
         target_dpi = STD_DPI if t != 'MK' else MK_DPI

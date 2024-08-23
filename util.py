@@ -1,17 +1,15 @@
 import cv2, os, struct, zlib, csv
 import numpy as np
-from PIL import Image
-# from libtiff import TIFF
 
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from constants import (
     STD_DPI,
+    All_TYPES_DICT,
+    ROOT_FOLDER,
+    PACK_LISTS,
+    SIZE_LIST,
 )
-# from googleapiclient.discovery import build
-# from oauth2client.service_account import ServiceAccountCredentials
-# from google.oauth2.service_account import Credentials
-# from googleapiclient.discovery import build
 
 def inches_to_pixels(inches, dpi):
     return int(round(inches * dpi))
@@ -118,17 +116,6 @@ def select_csv_data_by_type(csv_data, local_path, type=''):
     for n in range(len(csv_data['Type'])):
         if csv_data['Type'][n] == type:
             index_data.append(n)
-
-    # for n in range(len(csv_data['Total'])):
-    #     print(isinstance(csv_data['Total'][n], str))
-    #     try:
-    #         csv_data['Total'][n] = int(csv_data['Total'][n])
-    #     except ValueError:
-    #         csv_data['Total'][n] = 0
-
-    #     # print(isinstance(csv_data['Total'][n], int))
-    
-    # # csv_data = dict(sorted(csv_data.items(), key=lambda item: item[1]['Total']))
     
     for n in index_data:
         for _ in range(int(csv_data['Total'][n])):
@@ -157,166 +144,6 @@ def print_progress_bar (iteration, total, prefix = '', suffix = '', decimals = 1
     # Print New Line on Complete
     if iteration == total: 
         print()
-
-# Not Test!!!!!!!
-# def embed_png_in_svg(png_path, svg_path, width, height):
-#     # Read the PNG file
-#     with open(png_path, "rb") as png_file:
-#         png_data = png_file.read()
-    
-#     # Encode the PNG data to base64
-#     png_base64 = base64.b64encode(png_data).decode('utf-8')
-    
-#     # Create an SVG drawing
-#     dwg = svgwrite.Drawing(svg_path, size=(width, height))
-    
-#     # Add the PNG as an image to the SVG
-#     dwg.add(dwg.image(f"data:image/png;base64,{png_base64}",
-#                       insert=(0, 0),
-#                       size=(width, height)))
-    
-#     # Save the SVG file
-#     dwg.save()
-
-# # Usage
-# embed_png_in_svg('input_image.png', 'output_image.svg', 300, 200)
-
-
-# MISSING TO CREATE A SERVICE ACCOUNT WITH CREDENTIALS
-# def read_google_sheet(sheet_id, range_name):
-#     # Set up credentials
-#     creds = Credentials.from_service_account_file('path/to/your/service_account_key.json', 
-#                                                   scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
-    
-#     # Build the Sheets API service
-#     service = build('sheets', 'v4', credentials=creds)
-    
-#     # Call the Sheets API to get the data
-#     sheet = service.spreadsheets()
-#     result = sheet.values().get(spreadsheetId=sheet_id, range=range_name).execute()
-    
-#     # Get the data from the result
-#     data = result.get('values', [])
-    
-#     # Convert to dictionary
-#     if not data:
-#         return {}
-    
-#     headers = data[0]
-#     result_dict = {}
-    
-#     for row in data[1:]:
-#         for i, value in enumerate(row):
-#             if i < len(headers):
-#                 if headers[i] not in result_dict:
-#                     result_dict[headers[i]] = []
-#                 result_dict[headers[i]].append(value)
-    
-#     return result_dict
-
-
-# Arch bottom part of a 40oz cup wrap
-# def arch_image():
-
-#         # # Ensure the image has an alpha channel
-#         # if img.shape[2] == 3:
-#         #     img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
-
-#         height, width = resized_img.shape[:2]
-    
-#         # Create mappings for x and y coordinates
-#         map_x = np.zeros((height, width), dtype=np.float32)
-#         map_y = np.zeros((height, width), dtype=np.float32)
-
-#         # Calculate the radius of the arc
-#         bend_radians = np.radians(canvas[image_type][image_size]['arch'] * 1.8)  # Convert percentage to radians
-#         radius = height / bend_radians if bend_radians > 0 else float('inf')
-        
-#         # Calculate center of the arc
-#         center_y = height + radius
-        
-#         for y in range(height):
-#             for x in range(width):
-#                 # Normalize coordinates
-#                 norm_y = y / height
-#                 norm_x = x / width - 0.5
-                
-#                 # Calculate angle for this point
-#                 angle = norm_y * bend_radians
-                
-#                 # Calculate new positions
-#                 new_y = np.sin(angle) * radius
-#                 new_x = norm_x * (radius - new_y)
-                
-#                 # Convert back to pixel coordinates
-#                 map_y[y, x] = center_y - radius + new_y
-#                 map_x[y, x] = (new_x / radius + 0.5) * width
-        
-#         # for y in range(height):
-#         #     for x in range(width):
-#         #         # Calculate new x position (slight curve to maintain image width)
-#         #         normalized_x = x / (width - 1) - 0.5
-#         #         new_x = x + canvas[image_type][image_size]['arch'] * height * 0.1 * normalized_x
-#         #         map_x[y, x] = new_x
-                
-#         #         # Calculate new y position
-#         #         normalized_y = y / (height - 1)
-                
-#         #         # Apply sine curve for smooth arch effect
-#         #         offset = np.sin(np.pi * normalized_x) * canvas[image_type][image_size]['arch'] * height
-                
-#         #         new_y = y - offset * (1 - normalized_y)
-#         #         map_y[y, x] = new_y
-    
-
-#                 # # Calculate new x position (no change for x in this case)
-#                 # map_x[y, x] = x
-                
-#                 # # Calculate new y position
-#                 # normalized_x = x / (width - 1) - 0.5
-#                 # normalized_y = y / (height - 1)
-                
-#                 # # Apply quadratic curve for arch effect
-#                 # offset = canvas[image_type][image_size]['arch'] * (normalized_x ** 2)
-                
-#                 # new_y = (normalized_y + offset) * height
-#                 # map_y[y, x] = new_y
-        
-#         # Apply the mapping to create the arch effect
-#         img_arched = cv2.remap(resized_img, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_TRANSPARENT, borderValue=(0, 0, 0, 0))
-
-#         # # Create a mask for the valid (non-transparent) pixels
-#         # mask = img_arched[:,:,3] > 0
-
-#         # # Create a fully transparent image
-#         # result = np.zeros((height, width, 4), dtype=np.uint8)
-        
-#         # # Copy only the valid pixels to the result
-#         # result[mask] = img_arched[mask]
-        
-#         return img_arched
-#         # return fit_image_to_center_canvas(img_arched, img_arched.shape[1], img_arched.shape[0], target_dpi, image_type, image_size)
-
-# def connection_gcp():
-#     scope = ['https://www.googleapis.com/auth/drive.readonly']
-
-#     credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account_key.json', scope)
-
-#     # https://developers.google.com/drive/api/v3/quickstart/python
-#     service = build('drive', 'v3', credentials=credentials)
-
-#     # Call the Drive v3 API
-#     results = service.files().list(
-#         fields="*",corpora = 'drive',supportsAllDrives = True, driveId = "YOUR_DRIVE_ID", includeItemsFromAllDrives = True).execute()
-#     items = results.get('files', [])
-
-#     if not items:
-#         print('No files found.')
-#     else:
-#         print('Files:')
-#         for item in items:
-#             print(u'{0} ({1})'.format(item['name'], item['id']))
-
 
 def connection_gcp():
     gauth = GoogleAuth()
@@ -375,3 +202,42 @@ def png_to_cmyk_tiff(input_path, output_path):
     #     print(f"CMYK TIFF with transparency saved to {output_path}")
     # else:
     #     print("Failed to save the image")
+
+def get_order_data(orders):
+    titles = []
+    types = []
+    sizes = []
+    is_first = True
+    first_order = None
+    last_order = None
+
+    for order in orders:
+        order_dict = order.to_dict()
+        last_order = order_dict['order_number']
+        if is_first:
+            is_first = False
+            first_order = order_dict['order_number']
+        if order_dict['fulfillment_status'] == None:
+            line_items = order_dict['line_items']
+            for item in line_items:
+                if item['fulfillment_status'] == None and item['title'] != 'Shipping Protection by Route' and "Custom" not in item['title']:
+                    item_type = All_TYPES_DICT[item['title'].split('- ')[1].strip()]
+                    item_title = "{}{}/{}.png".format(ROOT_FOLDER, item_type, item['title'])
+                    if item['variant_title'] in SIZE_LIST:
+                        item_size = SIZE_LIST[item['variant_title']]
+                        quantity = item['quantity']
+                    else:
+                        item_size = ''
+                        quantity = item['quantity']*PACK_LISTS[item['variant_title']]
+                    for _ in range(quantity):
+                        if item_type == 'UVDTF 40oz':
+                            titles.append("{}{}/Top/{}.png".format(ROOT_FOLDER, item_type, item['title']))
+                            titles.append("{}{}/Bottom/{}.png".format(ROOT_FOLDER, item_type, item['title']))
+                            types.append(item_type)
+                            sizes.append(item_size)
+                        else:
+                            titles.append(item_title)
+                        types.append(item_type)
+                        sizes.append(item_size)
+
+    return titles, types, sizes, first_order, last_order

@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+    volumes:
+      - .:/app
+      - ./share/Graphics:/app/graphics
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1

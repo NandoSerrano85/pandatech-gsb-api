@@ -1,0 +1,14 @@
+fragment CollectionInfo on Collection {
+    id
+    title
+}
+
+query GetFirstNCollections($first: int!){
+    collections(first: $first) {
+        edges {
+            node{
+                ...CollectionInfo
+            }
+        }
+    }
+}

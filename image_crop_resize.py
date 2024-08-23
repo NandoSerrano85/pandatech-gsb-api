@@ -17,12 +17,12 @@ from constants import (
 
 def main():
     allTypes = All_TYPES
-    # allTypes = ['DTF']
+    # allTypes = ['MK']
     is_new_mk = False
 
     for t in allTypes:
         dirName = "{}".format(t)
-        # dirName = "{}/Bottom Cleanup".format(t)
+        # dirName = "{}/Top Cleanup".format(t)
         dirName = "{} Cleanup".format(t)
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
         folderImagePath = "{}{}".format(ROOT_FOLDER, dirName)

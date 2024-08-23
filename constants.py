@@ -7,6 +7,45 @@ SHEET_HEIGHT = 120
 
 All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK']
 
+All_TYPES_DICT = {
+    'DTF Transfer': 'DTF',
+    '16oz UVDTF Cup Wrap': 'UVDTF 16oz',
+    '16oz UVDTF Cup Wrap (EXCLUSIVE)': 'UVDTF 16oz',
+    'UVDTF Decal': 'UVDTF Decal',
+    'Motel Keychain': 'MK',
+    '40oz UVDTF Tumbler Wrap': 'UVDTF 40oz',
+    'UVDTF Bookmark Decal': 'UVDTF Bookmark'
+}
+
+PACK_LISTS = {
+    'Single': 1,
+    'Default title': 1,
+    '5 Pack': 5,
+    '10 Pack': 10,
+    '15 Pack': 15
+}
+
+SIZE_LIST = {
+    'Adult+ 13"': 'Adult+',
+    'Adult 11"': 'Adult',
+    'Youth 8"': 'Youth',
+    'Toddler 6"': 'Toddler',
+    'Pocket 4"': 'Pocket',
+}
+
+TABLE_DATA = {
+    'Title':[], 
+    'Type':[], 
+    'Size':[],
+}
+
+MISSING_TABLE_DATA = {
+    'Title':[], 
+    'Type':[], 
+    'Size':[],
+    'Total': [],
+}
+
 SIZING = {
     'DTF': {
         'Adult+': { 'height': 13.0 },
