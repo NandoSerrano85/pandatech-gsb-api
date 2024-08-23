@@ -1,3 +1,4 @@
+import random
 from gang_sheet_builder import create_gang_sheet
 from util import (
     find_png_files,
@@ -7,30 +8,34 @@ from constants import (
     All_TYPES,
     MK_DPI,
     STD_DPI,
+    DIR_LIST
 )
 
 
 def main():
-    order_range = "Test Prints Gravitees"
-    All_TYPES = ['DTF', 'UVDTF 16oz']
+    order_range = "PO ParisBerry 08232024"
+    All_TYPES = ['UVDTF 16oz']
     type_packs = ['5 Pack', 'Singles']
+    selected_amount = 300
 
-    size =[]
+    size = []
 
     for t in All_TYPES:
+        current_amount = 0
+        selectedFilePath = []
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
-        folderImagePath = "{}PRINT THESE/{}/Gravitees".format(ROOT_FOLDER, t)
 
-        pngFilePath, pngFileName = find_png_files(folderImagePath)
-        
-        # if not ordersByType:
-        #     pass
+        pngFilePath, pngFileName = find_png_files(DIR_LIST[t]['destination'])
+        while current_amount < selected_amount:
+            i = random.randint(0,len(pngFilePath)-1)
+            selectedFilePath.append(pngFilePath[i])
+            current_amount += 1
         if t == 'DTF':
             for n in range(len(pngFilePath)):
                 size.append('Adult')
-            create_gang_sheet(input_images=pngFilePath, image_type=t, gang_sheet_type='DTF', output_path=ROOT_FOLDER, order_range=order_range, image_size=size,  dpi=target_dpi)
+            create_gang_sheet(input_images=selectedFilePath, image_type=t, gang_sheet_type='DTF', output_path=ROOT_FOLDER, order_range=order_range, image_size=size,  dpi=target_dpi)
         else:
-            create_gang_sheet(input_images=pngFilePath, image_type=t, gang_sheet_type='UVDTF', output_path=ROOT_FOLDER, order_range=order_range, dpi=target_dpi, text="{} ".format(type_packs[1]))
+            create_gang_sheet(input_images=selectedFilePath, image_type=t, gang_sheet_type='UVDTF', output_path=ROOT_FOLDER, order_range=order_range, dpi=target_dpi, text="{} ".format(type_packs[1]))
 
     print("All Done!")
 main()

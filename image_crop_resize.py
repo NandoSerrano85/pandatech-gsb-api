@@ -17,16 +17,16 @@ from constants import (
 
 def main():
     allTypes = All_TYPES
-    # allTypes = ['MK']
+    allTypes = ['MK']
     is_new_mk = False
 
     for t in allTypes:
         dirName = "{}".format(t)
-        # dirName = "{}/Top Cleanup".format(t)
+        # dirName = "UVDTF 40oz/Top Cleanup"
         dirName = "{} Cleanup".format(t)
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
         folderImagePath = "{}{}".format(ROOT_FOLDER, dirName)
-        destinationImagePath = "{}{}".format(ROOT_FOLDER,t)
+        destinationImagePath = "{}{}".format(ROOT_FOLDER, t)
         # destinationImagePath = folderImagePath
         created_dir = False
         imageSize = None
@@ -49,9 +49,9 @@ def main():
         
         print_progress_bar(0, len(pngFilePath), prefix = 'Resizing:', suffix = 'Complete', length = 50)
         for n in range(0, len(pngFilePath)):
-            if t == 'UVDTF 40oz' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
+            if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
                 imageSize = 'Bottom'
-            elif t == 'UVDTF 40oz' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
+            elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
                 imageSize = 'Top'
             
             if len(images) > 0:
@@ -66,11 +66,11 @@ def main():
         print_progress_bar(0, len(pngFilePath), prefix = 'Saving:', suffix = 'Complete', length = 50)
         # #Saving all images to designated folder
         for n in range(0, len(pngFilePath)):
-            if t == 'UVDTF 40oz' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
-                destinationImagePath = "{}{}/Bottom/".format(ROOT_FOLDER,t)
-            elif t == 'UVDTF 40oz' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
-                destinationImagePath = "{}{}/Top/".format(ROOT_FOLDER,t)
-            if t == 'UVDTF 40oz' and not created_dir:
+            if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
+                destinationImagePath = "{}UVDTF 40oz/Bottom/".format(ROOT_FOLDER)
+            elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
+                destinationImagePath = "{}UVDTF 40oz/Top/".format(ROOT_FOLDER)
+            if (t == 'UVDTF 40oz Top' or t == 'UVDTF 40oz Bottom') and not created_dir:
                 created_dir = True
                 create_folder(destinationImagePath)
             save_single_image(resized_images[n], destinationImagePath, pngFileName[n], target_dpi=(target_dpi, target_dpi))

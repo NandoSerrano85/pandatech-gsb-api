@@ -75,6 +75,8 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
             if image_type == 'UVDTF 16oz':
                 img = rotate_image_90(img, 1)
+            if image_type == 'UVDTF 40oz Top':
+                img = rotate_image_90(img, 1)
             if image_type == 'DTF':
                 img = resize_image_by_inches(img_path, image=img, image_type=image_type, image_size=image_size[i], target_dpi=dpi)
             images.append(img)

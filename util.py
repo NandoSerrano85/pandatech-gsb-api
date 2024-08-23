@@ -207,6 +207,7 @@ def get_order_data(orders):
     titles = []
     types = []
     sizes = []
+    quantity = []
     is_first = True
     first_order = None
     last_order = None
@@ -220,24 +221,35 @@ def get_order_data(orders):
         if order_dict['fulfillment_status'] == None:
             line_items = order_dict['line_items']
             for item in line_items:
-                if item['fulfillment_status'] == None and item['title'] != 'Shipping Protection by Route' and "Custom" not in item['title']:
+                if item['fulfillment_status'] == None and item['title'] != 'Shipping Protection by Route':
+                    if 'Custom' in item['title']:
+                        titles.append("{} - {}".format(item['title'], order_dict['order_number']))
+                        types.append('Custom')
+                        sizes.append(item['variant_title'])
+                        quantity.append(item['quantity'])
+                        continue
                     item_type = All_TYPES_DICT[item['title'].split('- ')[1].strip()]
                     item_title = "{}{}/{}.png".format(ROOT_FOLDER, item_type, item['title'])
                     if item['variant_title'] in SIZE_LIST:
                         item_size = SIZE_LIST[item['variant_title']]
-                        quantity = item['quantity']
+                        item_quantity = item['quantity']
                     else:
                         item_size = ''
-                        quantity = item['quantity']*PACK_LISTS[item['variant_title']]
-                    for _ in range(quantity):
+                        item_quantity = item['quantity']*PACK_LISTS[item['variant_title']]
+                    for _ in range(item_quantity):
                         if item_type == 'UVDTF 40oz':
                             titles.append("{}{}/Top/{}.png".format(ROOT_FOLDER, item_type, item['title']))
-                            titles.append("{}{}/Bottom/{}.png".format(ROOT_FOLDER, item_type, item['title']))
-                            types.append(item_type)
-                            sizes.append(item_size)
+                            types.append('UVDTF 40oz Top')
+                            sizes.append('Top')
+                            quantity.append(item_quantity)
+                            titles.append("{}{}/Bottom/{} (Bottom).png".format(ROOT_FOLDER, item_type, item['title']))
+                            types.append('UVDTF 40oz Bottom')
+                            sizes.append('Bottom')
+                            quantity.append(item_quantity)
                         else:
                             titles.append(item_title)
-                        types.append(item_type)
-                        sizes.append(item_size)
+                            types.append(item_type)
+                            sizes.append(item_size)
+                            quantity.append(item_quantity)
 
-    return titles, types, sizes, first_order, last_order
+    return titles, types, sizes, quantity, first_order, last_order
