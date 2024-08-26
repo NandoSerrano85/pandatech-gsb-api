@@ -6,4 +6,5 @@ __pycache__/
 client_secret_810820735575-l2oq26vc90001ut93prbn3l0dgn75qlc.apps.googleusercontent.com.json
 client_secrets.json
 service_account_key.json
+credential.json
 pythonProtos/
