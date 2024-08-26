@@ -19,6 +19,9 @@ from pprint import pprint
 
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
+def create_gang_sheet_kwargs(kwargs):
+    return create_gang_sheet(**kwargs)
+
 def add_text_to_gang_sheet(gang_sheet, text, width_pixels, max_height, dpi):
         # Calculate the space for text 
         text_height = int(max_height * TEXT_AREA_HEIGHT)
@@ -65,8 +68,6 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
     has_missing = False
     i = 0
     progress = 0
-    print("\nGetting Images for {}".format(image_type))
-    print_progress_bar(0, len(input_images), prefix = 'Images and Resizing:', suffix = 'Complete', length = 50)
     while i < len(input_images):
         img_path = input_images[i]
         if os.path.exists(img_path):
@@ -95,21 +96,16 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             if image_size:
                 image_size.pop(i)
         progress += 1
-        print_progress_bar(progress, len(input_images), prefix = 'Images and Resizing:', suffix = 'Complete', length = 50)
     
     if not images:
         print("Error: No valid images provided")
         return False
     
-    print("Finished getting images\n")
-    # Place images on the gang sheet
-    
+    # Place images on the gang sheet   
     gang_sheets_png = []
     gang_sheets_svg = []
     image_index = 0
 
-    print("Creating {} total gangsheet\n".format(num_sheets))
-    print_progress_bar(0, len(images), prefix = '', suffix = 'Complete', length = 50)
     for sheet in range(num_sheets):
         # Create a blank gang sheet np.zeros((height_px, width_px, 4), dtype=np.uint8)
         svg_output_file = "{}{} {} {}part{}.svg".format(output_path, order_range, image_type, text, sheet+1)
@@ -129,6 +125,7 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
 
             img = images[n]
             img_height, img_width = img.shape[:2]
+
             
             # Check if image fits in the current row
             if current_x + img_width > width_px:
@@ -156,7 +153,6 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             # Update position and row height
             current_x += img_width + spacing_width_px
             row_height = max(row_height, img_height)
-            print_progress_bar(n+1, len(images), prefix = '{} Gangsheet {}:'.format(image_type, sheet+1), suffix = 'Complete', length = 50)
 
         alpha = gang_sheet[:, :, 3]
         coords = cv2.findNonZero(alpha)
@@ -189,8 +185,6 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
         else:
             print(f"Warning: Sheet {sheet + 1} is empty (all transparent). Skipping.")
 
-    print('Finished making gangsheets\n')
-    print("Saving Gangsheets\n")
     # Save the gang sheet
     for n in range(len(gang_sheets_png)):
         save_single_image(gang_sheets_png[n], output_path, "{} {} {} part{}.png".format(order_range, image_type, text, n+1))
@@ -198,7 +192,6 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
         # gang_sheets_svg[n].save()
 
     if has_missing:
-        print("Creating CSV of Missing\n")
         missing_dict = { 'Title':[],  'Type':[],  'Size':[], 'Total': []}
         with open("{}/{}_missing.csv".format(output_path, image_type), 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)

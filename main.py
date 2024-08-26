@@ -1,4 +1,4 @@
-import os, shopify, logging, sys, re
+import os, shopify, multiprocessing
 from dotenv import load_dotenv
 from typing import Union
 from pprint import pprint
@@ -15,20 +15,14 @@ from constants import (
     All_TYPES,
     ROOT_FOLDER,
     MISSING_TABLE_DATA,
-    DTF_MAX_SIZE,
-    DIR_LIST,
 )
 
 from util import (
     get_order_data,
-    find_png_files,
-    create_folder,
-    save_single_image,
 )
 
-from gang_sheet_builder import create_gang_sheet
-from croppping import crop_transparent
-from resizing import resize_image_by_inches
+from gang_sheet_builder import create_gang_sheet, create_gang_sheet_kwargs
+from image_cleanup import image_cleanup
 
 
 load_dotenv()
@@ -79,6 +73,7 @@ def read_create_gangasheets() -> MissingDataTable:
     order_data = TABLE_DATA
     missing_data_dict = MISSING_TABLE_DATA
     order_start, order_end = 999999999, 0
+    order_range = ''
     data = dict()
 
     # if more than 50 open orders logic for pagination else no need for pagination
@@ -121,10 +116,12 @@ def read_create_gangasheets() -> MissingDataTable:
                 missing_data_dict['Type'].append(k)
                 missing_data_dict['Total'].append(v['Total'])
                 missing_data_dict['Size'].append(v['Size'])
-    
+
     for t in All_TYPES:
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
-        
+
+        if t not in data:
+            continue
         if t == 'DTF':
             missing_data = create_gang_sheet(input_images=data[t]['Title'], image_type=t, gang_sheet_type='DTF', output_path=ROOT_FOLDER, order_range=order_range, image_size=data[t]['Size'],  dpi=target_dpi)
         else:
@@ -142,42 +139,46 @@ def read_create_gangasheets() -> MissingDataTable:
                 missing_data_dict['Total'].append(missing_data['Total'])
                 missing_data_dict['Size'].append(missing_data['Size'])
 
+    #     pool = multiprocessing.Pool(processes=4)
+    #     if t == 'DTF':
+    #         missing_data = pool.map(create_gang_sheet_kwargs, [{'input_images':data[t]['Title'], 'image_type':t, 'gang_sheet_type':'DTF', 'output_path':ROOT_FOLDER, 'order_range':order_range, 'image_size':data[t]['Size'], 'dpi':target_dpi}])
+    #     else:
+    #         missing_data = pool.map(create_gang_sheet_kwargs, [{'input_images':data[t]['Title'], 'image_type':t, 'gang_sheet_type':'UVDTF', 'output_path':ROOT_FOLDER, 'order_range':order_range, 'dpi':target_dpi, 'text':'Singles'}])
+
+    #     if missing_data:
+    #         for msd in missing_data:
+    #             if not msd:
+    #                 continue
+    #             if len(missing_data_dict['Title']) == 0:
+    #                 missing_data_dict['Title'] = msd['Title']
+    #                 missing_data_dict['Type'] = msd['Type']
+    #                 missing_data_dict['Total'] = msd['Total']
+    #                 missing_data_dict['Size'] = msd['Size']
+    #             else:
+    #                 missing_data_dict['Title'].append(msd['Title'])
+    #                 missing_data_dict['Type'].append(msd['Type'])
+    #                 missing_data_dict['Total'].append(msd['Total'])
+    #                 missing_data_dict['Size'].append(msd['Size'])
+
+    # pool.close()
+    # print("Pool is closed. No new tasks will be accepted.")
+    # pool.join()
+    # print("Pool has been joined. All processes have exited.")
     shopify.ShopifyResource.clear_session()
 
     return {'title': missing_data_dict['Title'], 'type': missing_data_dict['Type'], 'size': missing_data_dict['Size'], 'total': missing_data_dict['Total']}
 
 
 @app.get("/cleanup/{image_type}")
-def read_item(image_type: str, q: Union[str, None] = None):
+def read_item(image_type: str):
     if image_type in All_TYPES or image_type == 'all':
         if image_type == 'all':
             for t in All_TYPES:
-                images = []
-                resized_images = []
-                imageSize = None
+                image_cleanup(t)
+        else:
+            image_cleanup(image_type)
 
-                target_dpi = STD_DPI if t != 'MK' else MK_DPI
-                pngFilePath, pngFileName = find_png_files(DIR_LIST[t]['source'])
-
-                if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
-                    imageSize = 'Bottom'
-                elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
-                    imageSize = 'Top'
-                elif t == 'DTF':
-                    imageSize = DTF_MAX_SIZE
-
-                for n in range(0, len(pngFilePath)):
-                    images.append(crop_transparent(pngFilePath[n]))
-
-                for n in range(0, len(pngFilePath)):
-                    if len(images) > 0:
-                        resized_images.append(resize_image_by_inches(pngFilePath[n], t, imageSize, images[n], is_new_mk=False, target_dpi=target_dpi))
-                    else:
-                        resized_images.append(resize_image_by_inches(pngFilePath[n], t, imageSize, is_new_mk=False, target_dpi=target_dpi))
-
-                create_folder(DIR_LIST[t]['destination'])
-                for n in range(0, len(pngFilePath)):
-                    save_single_image(resized_images[n], DIR_LIST[t]['destination'], pngFileName[n], target_dpi=(target_dpi, target_dpi))
+        return {'Success': "all images in clean up folders have been cropped and resized."}
     else:
         return {'Error': "did not pass in the correct variable"}
 

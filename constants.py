@@ -69,6 +69,7 @@ SIZE_LIST = {
     'Youth 8"': 'Youth',
     'Toddler 6"': 'Toddler',
     'Pocket 4"': 'Pocket',
+    'Adult Plus': 'Adult+',
 }
 
 TABLE_DATA = {
@@ -149,7 +150,7 @@ UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_BOTTOM,
 }
 
-DTF_GANG_SHEET_MAX_WIDTH = 22.5
+DTF_GANG_SHEET_MAX_WIDTH = 23
 
 DTF_GANG_SHEET_SPACING_ADULT_PLUS = {'width': 0.5, 'height': 0.5}
 DTF_GANG_SHEET_SPACING = { 

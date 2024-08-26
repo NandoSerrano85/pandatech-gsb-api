@@ -13,7 +13,7 @@ from constants import (
 
 
 def main():
-    order_range = "PO ParisBerry 08232024"
+    order_range = "PO ParisBerry 08252024"
     All_TYPES = ['UVDTF 16oz']
     type_packs = ['5 Pack', 'Singles']
     selected_amount = 300
@@ -25,7 +25,7 @@ def main():
         selectedFilePath = []
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
 
-        pngFilePath, pngFileName = find_png_files(DIR_LIST[t]['destination'])
+        pngFilePath, pngFileName = find_png_files('{}ParisBerry'.format(ROOT_FOLDER))
         while current_amount < selected_amount:
             i = random.randint(0,len(pngFilePath)-1)
             selectedFilePath.append(pngFilePath[i])

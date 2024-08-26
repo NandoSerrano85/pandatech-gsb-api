@@ -5,10 +5,13 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from constants import (
     STD_DPI,
+    MK_DPI,
     All_TYPES_DICT,
     ROOT_FOLDER,
     PACK_LISTS,
     SIZE_LIST,
+    All_TYPES,
+    DTF_MAX_SIZE,
 )
 
 def inches_to_pixels(inches, dpi):
@@ -222,13 +225,18 @@ def get_order_data(orders):
             line_items = order_dict['line_items']
             for item in line_items:
                 if item['fulfillment_status'] == None and item['title'] != 'Shipping Protection by Route':
-                    if 'Custom' in item['title']:
+                    item_type = item['title'].split('- ')
+                    if len(item_type) < 2:
+                        item_type = item_type[0].strip()
+                    else:
+                        item_type = item_type[1].strip()
+                    if 'Custom' in item['title'] or item_type not in All_TYPES_DICT:
                         titles.append("{} - {}".format(item['title'], order_dict['order_number']))
                         types.append('Custom')
                         sizes.append(item['variant_title'])
                         quantity.append(item['quantity'])
                         continue
-                    item_type = All_TYPES_DICT[item['title'].split('- ')[1].strip()]
+                    item_type = All_TYPES_DICT[item_type]
                     item_title = "{}{}/{}.png".format(ROOT_FOLDER, item_type, item['title'])
                     if item['variant_title'] in SIZE_LIST:
                         item_size = SIZE_LIST[item['variant_title']]

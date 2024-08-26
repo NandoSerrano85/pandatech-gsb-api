@@ -15,7 +15,7 @@ def main():
     order_range = "PO ParisBerry 08222024"
     type_packs = ['5 Pack', 'Singles']
     tp = type_packs[1]
-    order_csv = "ParisBerry Purchase Order - 08222024 - Original.csv"
+    order_csv = "ParisBerry Purchase Order - 08222024 - Sheet2.csv"
     csvFilePath = "/Users/fserrano/Desktop/{}".format(order_csv)
     orderDict = read_local_csv(csvFilePath)
     All_TYPES = ['UVDTF 16oz']
