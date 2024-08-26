@@ -1,13 +1,13 @@
 import re
 from croppping import crop_transparent
 from resizing import resize_image_by_inches
-from util import (
+from app.core.util import (
     create_folder,
     find_png_files,
     save_single_image,
     print_progress_bar,
     )
-from constants import (
+from app.core.constants import (
     STD_DPI,
     MK_DPI,
     All_TYPES,

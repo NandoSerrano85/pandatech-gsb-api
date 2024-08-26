@@ -1,7 +1,7 @@
-from util import (
+from app.core.util import (
     png_to_cmyk_tiff
 )
-from constants import (
+from app.core.constants import (
     ROOT_FOLDER,
     All_TYPES,
     MK_DPI,

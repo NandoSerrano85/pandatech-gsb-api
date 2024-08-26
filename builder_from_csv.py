@@ -1,10 +1,10 @@
-from gang_sheet_builder import create_gang_sheet
-from util import (
+from app.core.gang_sheet_builder import create_gang_sheet
+from app.core.util import (
     find_png_files,
     read_local_csv,
     select_csv_data_by_type,
     )
-from constants import (
+from app.core.constants import (
     ROOT_FOLDER,
     All_TYPES,
     MK_DPI,
@@ -12,13 +12,13 @@ from constants import (
 )
 
 def main():
-    order_range = "PO ParisBerry 08222024"
+    order_range = "Rush 4714"
     type_packs = ['5 Pack', 'Singles']
     tp = type_packs[1]
-    order_csv = "ParisBerry Purchase Order - 08222024 - Sheet2.csv"
+    order_csv = "Sublimation 08262024 - Sheet2.csv"
     csvFilePath = "/Users/fserrano/Desktop/{}".format(order_csv)
     orderDict = read_local_csv(csvFilePath)
-    All_TYPES = ['UVDTF 16oz']
+    All_TYPES = ['UVDTF 16oz', 'UVDTF Decal']
 
     for t in All_TYPES:
         target_dpi = STD_DPI if t != 'MK' else MK_DPI

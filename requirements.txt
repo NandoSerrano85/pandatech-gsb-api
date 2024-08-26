@@ -13,3 +13,10 @@ csv
 ShopifyAPI
 oauth2client
 google-api-python-client
+sqlalchemy
+psycopg2-binary
+alembic
+grpcio
+grpcio-tools
+bcrypt
+pyjwt

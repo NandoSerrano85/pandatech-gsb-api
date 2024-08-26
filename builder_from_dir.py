@@ -1,9 +1,9 @@
 import random
-from gang_sheet_builder import create_gang_sheet
-from util import (
+from ImageApp.app.core.gang_sheet_builder import create_gang_sheet
+from ImageApp.app.core.util import (
     find_png_files,
     )
-from constants import (
+from ImageApp.app.core.constants import (
     ROOT_FOLDER,
     All_TYPES,
     MK_DPI,

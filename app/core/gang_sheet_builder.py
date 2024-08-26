@@ -1,8 +1,13 @@
 import numpy as np
 import cv2, csv, os, statistics, svgwrite
 from math import ceil
-from util import inches_to_pixels, rotate_image_90, print_progress_bar, save_single_image
-from constants import (
+from app.core.util import(
+    inches_to_pixels,
+    rotate_image_90,
+    print_progress_bar,
+    save_single_image
+)
+from app.core.constants import (
     GANG_SHEET_MAX_WIDTH,
     GANG_SHEET_SPACING,
     GANG_SHEET_MAX_ROW,
@@ -13,7 +18,7 @@ from constants import (
     TEXT_AREA_HEIGHT,
     MISSING_TABLE_DATA,
 )
-from resizing import resize_image_by_inches
+from app.core.resizing import resize_image_by_inches
 from base64 import b64encode
 from pprint import pprint
 

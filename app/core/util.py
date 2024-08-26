@@ -3,7 +3,7 @@ import numpy as np
 
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-from constants import (
+from app.core.constants import (
     STD_DPI,
     MK_DPI,
     All_TYPES_DICT,

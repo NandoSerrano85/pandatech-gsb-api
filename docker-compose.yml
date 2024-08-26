@@ -1,13 +1,51 @@
 version: '3.8'
 
 services:
-  api:
-    build: .
-    command: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://fserrano:F3rn4nd0!!@db:5432/appdb
+      - JWT_SECRET=pandatech-jwt-secret
     volumes:
       - .:/app
-      - ./share/Graphics:/app/graphics
+
+  grpc:
+    build:
+      context: .
+      dockerfile: Dockerfile.grpc
     ports:
-      - "5000:5000"
+      - "50051:50051"
+    depends_on:
+      - db
+      - proto-gen
     environment:
-      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://fserrano:F3rn4nd0!!@db:5432/appdb
+      - JWT_SECRET=pandatech-jwt-secret
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=fserrano
+      - POSTGRES_PASSWORD=F3rn4nd0!!
+      - POSTGRES_DB=appdb
+    ports:
+      - "5432:5432"
+
+  proto-gen:
+    build: .
+    command: python generate_protos.py
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:

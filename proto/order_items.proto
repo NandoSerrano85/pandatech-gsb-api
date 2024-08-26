@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package order_items;
+
+service OrderItemsService {
+  rpc GetOrderItems (OrderItemsRequest) returns (OrderItemsResponse) {}
+}
+
+message OrderItemsRequest {
+  int32 id = 1;
+}
+
+message OrderItemsResponse {
+  int32 id = 1;
+  string order_number = 2;
+  string title = 3;
+  string type = 4;
+  int32 total = 5;
+  string size = 6;
+}

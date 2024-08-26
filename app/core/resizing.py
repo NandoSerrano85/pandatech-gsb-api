@@ -1,12 +1,12 @@
 import cv2, os
 import numpy as np
 from PIL import Image
-from util import (
+from app.core.util import (
     inches_to_pixels, 
     rotate_image_90,
     check_image_array,
 )
-from constants import (
+from app.core.constants import (
     SIZING,
     CANVAS,
     STD_DPI,
