@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.routes import images
 from app.api.routes import(
     user as user_routes,
-    gangsheets as gang_sheets,
     cleanup as clean_up,
 )
 from database.db import engine, Base
@@ -22,7 +22,7 @@ Base.metadata.create_all(bind=engine)
 
 # Include API routes
 app.include_router(user_routes.router)
-app.include_router(gang_sheets.router)
+app.include_router(images.router)
 app.include_router(clean_up.router)
 
 if __name__ == "__main__":

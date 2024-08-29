@@ -4,7 +4,6 @@ from math import ceil
 from app.core.util import(
     inches_to_pixels,
     rotate_image_90,
-    print_progress_bar,
     save_single_image
 )
 from app.core.constants import (
@@ -14,13 +13,10 @@ from app.core.constants import (
     GANG_SHEET_MAX_ROW_HEIGHT,
     GANG_SHEET_MAX_HEIGHT,
     STD_DPI,
-    SIZING,
     TEXT_AREA_HEIGHT,
-    MISSING_TABLE_DATA,
 )
 from app.core.resizing import resize_image_by_inches
 from base64 import b64encode
-from pprint import pprint
 
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
@@ -161,6 +157,7 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
 
         alpha = gang_sheet[:, :, 3]
         coords = cv2.findNonZero(alpha)
+        margin = 10
         
         if coords is not None:
             # Crop empty space
@@ -169,6 +166,12 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             cols = np.any(alpha_channel, axis=0)
             ymin, ymax = np.where(rows)[0][[0, -1]]
             xmin, xmax = np.where(cols)[0][[0, -1]]
+
+            # Apply margins
+            ymin = max(ymin - margin, 0)
+            ymax = min(ymax + margin, img.shape[0] - 1)
+            xmin = max(xmin - margin, 0)
+            xmax = min(xmax + margin, img.shape[1] - 1)
             
             cropped_gang_sheet = gang_sheet[ymin:ymax+1, xmin:xmax+1]
             
@@ -191,8 +194,11 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             print(f"Warning: Sheet {sheet + 1} is empty (all transparent). Skipping.")
 
     # Save the gang sheet
+    part = 1
     for n in range(len(gang_sheets_png)):
-        save_single_image(gang_sheets_png[n], output_path, "{} {} {} part{}.png".format(order_range, image_type, text, n+1))
+        while os.path.exists("{} {} {} part{}.png".format(order_range, image_type, text, part)):
+            part += 1
+        save_single_image(gang_sheets_png[n], output_path, "{} {} {} part{}.png".format(order_range, image_type, text, part))
         # Create SVG
         # gang_sheets_svg[n].save()
 

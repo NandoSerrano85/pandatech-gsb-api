@@ -12,6 +12,7 @@ from app.core.constants import (
     SIZE_LIST,
     All_TYPES,
     DTF_MAX_SIZE,
+    ALLOWED_EXTENSIONS,
 )
 
 def inches_to_pixels(inches, dpi):
@@ -261,3 +262,6 @@ def get_order_data(orders):
                             quantity.append(item_quantity)
 
     return titles, types, sizes, quantity, first_order, last_order
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

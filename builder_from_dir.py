@@ -1,9 +1,9 @@
 import random
-from ImageApp.app.core.gang_sheet_builder import create_gang_sheet
-from ImageApp.app.core.util import (
+from app.core.gang_sheet_builder import create_gang_sheet
+from app.core.util import (
     find_png_files,
     )
-from ImageApp.app.core.constants import (
+from app.core.constants import (
     ROOT_FOLDER,
     All_TYPES,
     MK_DPI,
@@ -17,19 +17,24 @@ def main():
     All_TYPES = ['UVDTF 16oz']
     type_packs = ['5 Pack', 'Singles']
     selected_amount = 300
+    selected_amount = 60
 
     size = []
 
     for t in All_TYPES:
         current_amount = 0
-        selectedFilePath = []
+        selectedFilePath = set()
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
 
         pngFilePath, pngFileName = find_png_files('{}ParisBerry'.format(ROOT_FOLDER))
+    
         while current_amount < selected_amount:
-            i = random.randint(0,len(pngFilePath)-1)
-            selectedFilePath.append(pngFilePath[i])
+            selectedFilePath.add(pngFilePath.pop())
             current_amount += 1
+        #     i = random.randint(0,len(pngFilePath)-1)
+        #     selectedFilePath.add(pngFilePath[i])
+        #     current_amount = len(selectedFilePath)
+        selectedFilePath = list(selectedFilePath)
         if t == 'DTF':
             for n in range(len(pngFilePath)):
                 size.append('Adult')

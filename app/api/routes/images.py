@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from ImageApp.app.core.util import (
     get_order_data,
 )
-from ImageApp.app.schemas.gangsheets import (
-    MissingDataResponse
+from app.models.model_protos import (
+    MissingImageModel
 )
 from ImageApp.app.core.constants import (
     TABLE_DATA,
@@ -24,7 +24,7 @@ load_dotenv()
 
 router = APIRouter()
 
-@router.get("/create_gangsheets", response_model=MissingDataResponse)
+@router.get("/create_gangsheets", response_model=MissingImageModel)
 def create_gangsheets_from_shopify_orders():
     # Create a shopify session
     session = shopify.Session(settings.SHOPIFY_URL, settings.API_VERSION, settings.API_ACCESS_TOKEN)
@@ -130,7 +130,7 @@ def create_gangsheets_from_shopify_orders():
     # print("Pool has been joined. All processes have exited.")
     shopify.ShopifyResource.clear_session()
 
-    return MissingDataResponse({'title': missing_data_dict['Title'], 'type': missing_data_dict['Type'], 'size': missing_data_dict['Size'], 'total': missing_data_dict['Total']})
+    return MissingImageModel({'title': missing_data_dict['Title'], 'type': missing_data_dict['Type'], 'size': missing_data_dict['Size'], 'total': missing_data_dict['Total']})
 
 
 @router.get("/create_gangsheet/{order_number}")

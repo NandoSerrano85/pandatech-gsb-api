@@ -4,12 +4,8 @@ numpy
 opencv-python-headless
 pillow
 statistics
-svgwrite
-math
-base64
-struct
-zlib
-csv
+svgwrite==1.4.3
+python-csv
 ShopifyAPI
 oauth2client
 google-api-python-client
@@ -20,3 +16,4 @@ grpcio
 grpcio-tools
 bcrypt
 pyjwt
+protobuf-to-pydantic
