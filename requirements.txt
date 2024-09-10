@@ -1,6 +1,8 @@
 fastapi
 uvicorn
 numpy
+protobuf==3.20.*
+python-jose
 opencv-python-headless
 pillow
 statistics
@@ -10,10 +12,14 @@ ShopifyAPI
 oauth2client
 google-api-python-client
 sqlalchemy
+simplejson
 psycopg2-binary
 alembic
 grpcio
 grpcio-tools
 bcrypt
 pyjwt
+pydantic
+pydantic-settings
 protobuf-to-pydantic
+pydrive

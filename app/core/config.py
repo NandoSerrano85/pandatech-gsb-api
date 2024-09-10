@@ -1,10 +1,11 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DATABASE_URL: str
     JWT_SECRET: str
     API_ACCESS_TOKEN: str
     API_KEY: str
+    API_SECRET: str
     SHOPIFY_URL: str
     API_VERSION: str
     JWT_ALGORITHM: str = "HS256"
@@ -12,5 +13,3 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-
-settings = Settings()

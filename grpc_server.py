@@ -1,7 +1,7 @@
 import grpc
 from concurrent import futures
-from pythonProtos.user_pb2_grpc import add_UserServiceServicer_to_server
-from pythonProtos.images_pb2_grpc import add_ImageServiceServicer_to_server
+from protos.generated.user_pb2_grpc import add_UserServiceServicer_to_server
+from protos.generated.images_pb2_grpc import add_ImageServiceServicer_to_server
 from database.db import engine, Base
 from app.services.user_service import UserServicer
 from app.services.image_service import ImageServicer

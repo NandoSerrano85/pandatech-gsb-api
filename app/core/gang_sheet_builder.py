@@ -1,5 +1,5 @@
 import numpy as np
-import cv2, csv, os, statistics, svgwrite
+import cv2, csv, os, statistics
 from math import ceil
 from app.core.util import(
     inches_to_pixels,
@@ -16,7 +16,6 @@ from app.core.constants import (
     TEXT_AREA_HEIGHT,
 )
 from app.core.resizing import resize_image_by_inches
-from base64 import b64encode
 
 os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
@@ -58,17 +57,24 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
         total_height = (average_row_height + GANG_SHEET_SPACING[gang_sheet_type]['Adult+']['height']) * total_rows + GANG_SHEET_SPACING[gang_sheet_type]['Adult+']['height']
         total_height_px = inches_to_pixels(total_height, dpi)
         height_px = inches_to_pixels(GANG_SHEET_MAX_HEIGHT, dpi)
+
+    # Clearing variables
+    average_row = None
+    average_row_height = None
+    total_rows = None
+    total_height = None
+
     # Calculate dimensions in pixels
     width_px = inches_to_pixels(GANG_SHEET_MAX_WIDTH[gang_sheet_type], dpi)
 
     num_sheets = ceil(total_height_px / height_px)
     
+    total_height_px = None
     # Load and process images
     images = []
     images_not_found = dict()
     has_missing = False
     i = 0
-    progress = 0
     while i < len(input_images):
         img_path = input_images[i]
         if os.path.exists(img_path):
@@ -96,21 +102,22 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             input_images.pop(i)
             if image_size:
                 image_size.pop(i)
-        progress += 1
     
+    input_images.clear()
+
     if not images:
         print("Error: No valid images provided")
         return False
     
     # Place images on the gang sheet   
     gang_sheets_png = []
-    gang_sheets_svg = []
+    # gang_sheets_svg = []
     image_index = 0
 
     for sheet in range(num_sheets):
         # Create a blank gang sheet np.zeros((height_px, width_px, 4), dtype=np.uint8)
-        svg_output_file = "{}{} {} {}part{}.svg".format(output_path, order_range, image_type, text, sheet+1)
-        dwg = svgwrite.Drawing(svg_output_file)
+        # svg_output_file = "{}{} {} {}part{}.svg".format(output_path, order_range, image_type, text, sheet+1)
+        # dwg = svgwrite.Drawing(svg_output_file)
         gang_sheet = np.zeros((height_px, width_px, 4), dtype=np.uint8)
         gang_sheet[:, :, 3] = 0 
         current_x, current_y = 0, 0
@@ -167,11 +174,11 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             ymin, ymax = np.where(rows)[0][[0, -1]]
             xmin, xmax = np.where(cols)[0][[0, -1]]
 
-            # Apply margins
-            ymin = max(ymin - margin, 0)
-            ymax = min(ymax + margin, img.shape[0] - 1)
-            xmin = max(xmin - margin, 0)
-            xmax = min(xmax + margin, img.shape[1] - 1)
+            # # Apply margins
+            # ymin = max(ymin - margin, 0)
+            # ymax = min(ymax + margin, gang_sheet.shape[0] - 1)
+            # xmin = max(xmin - margin, 0)
+            # xmax = min(xmax + margin, gang_sheet.shape[1] - 1)
             
             cropped_gang_sheet = gang_sheet[ymin:ymax+1, xmin:xmax+1]
             
@@ -183,25 +190,30 @@ def create_gang_sheet(input_images, image_type, gang_sheet_type, output_path, or
             resized_gang_sheet = cv2.resize(cropped_gang_sheet, (new_width, new_height), interpolation=cv2.INTER_AREA)
             gang_sheets_png.append(resized_gang_sheet)
 
+            del cropped_gang_sheet
+            del resized_gang_sheet
+
             # Clean up for SVG
             # dwg['viewBox'] = f"0 0 {new_width} {new_height}"
             # width_inches = new_width / dpi
             # height_inches = new_height / dpi
             # dwg['width'] = f"{width_inches}in"
             # dwg['height'] = f"{height_inches}in"
-            gang_sheets_svg.append(dwg)
+            # gang_sheets_svg.append(dwg)
         else:
             print(f"Warning: Sheet {sheet + 1} is empty (all transparent). Skipping.")
-
+        del gang_sheet
+    images.clear()
     # Save the gang sheet
     part = 1
     for n in range(len(gang_sheets_png)):
-        while os.path.exists("{} {} {} part{}.png".format(order_range, image_type, text, part)):
-            part += 1
-        save_single_image(gang_sheets_png[n], output_path, "{} {} {} part{}.png".format(order_range, image_type, text, part))
+        # while os.path.exists("{} {} {} part {}.png".format(order_range, image_type, text, part)):
+        #     part += 1
+        save_single_image(gang_sheets_png[n], output_path, "{} {} {} part {}.png".format(order_range, image_type, text, n+1))
         # Create SVG
         # gang_sheets_svg[n].save()
 
+    gang_sheets_png.clear()
     if has_missing:
         missing_dict = { 'Title':[],  'Type':[],  'Size':[], 'Total': []}
         with open("{}/{}_missing.csv".format(output_path, image_type), 'w', newline='') as csvfile:

@@ -14,6 +14,7 @@ services:
       - JWT_SECRET=pandatech-jwt-secret
     volumes:
       - .:/app
+      - /Users/fserrano/Desktop/:/app/data
 
   grpc:
     build:
@@ -23,7 +24,6 @@ services:
       - "50051:50051"
     depends_on:
       - db
-      - proto-gen
     environment:
       - DATABASE_URL=postgresql://fserrano:F3rn4nd0!!@db:5432/appdb
       - JWT_SECRET=pandatech-jwt-secret
@@ -40,12 +40,6 @@ services:
       - POSTGRES_DB=appdb
     ports:
       - "5432:5432"
-
-  proto-gen:
-    build: .
-    command: python generate_protos.py
-    volumes:
-      - .:/app
 
   frontend:
     build:

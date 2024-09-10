@@ -1,10 +1,10 @@
 # image_service.py
 import uuid, os, grpc
-from pythonProtos.images_pb2 import (
+from protos.generated.images_pb2 import (
     Image,
     ListImagesResponse,
 )
-from pythonProtos.images_pb2_grpc import ImageServiceServicer
+from protos.generated.images_pb2_grpc import ImageServiceServicer
 
 from app.core.constants import (
     DIR_LIST,
@@ -12,7 +12,7 @@ from app.core.constants import (
 from app.core.util import (
     allowed_file,
 )
-from app.models.images import (
+from app.models.model_protos import (
     ImageModel,
 )
 from database.db import get_db

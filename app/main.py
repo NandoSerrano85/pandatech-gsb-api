@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import images
 from app.api.routes import(
     user as user_routes,
     cleanup as clean_up,
+    images
 )
 from database.db import engine, Base
 

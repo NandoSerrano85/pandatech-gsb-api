@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from ImageApp.app.core.image_cleanup import (
+from app.core.image_cleanup import (
     image_cleanup,
 )
-from ImageApp.app.core.constants import (
+from app.core.constants import (
     All_TYPES,
 )
 

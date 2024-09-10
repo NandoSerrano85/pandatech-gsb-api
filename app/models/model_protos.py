@@ -1,62 +1,76 @@
-import os
-from google.protobuf.json_format import MessageToDict
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy_protobuf import ProtobufMixin
-from sqlalchemy_protobuf.sqlalchemy_protobuf import ProtobufSerializer
-from datetime import datetime
+import inspect
+from sqlalchemy import Column, Integer, String, Float, Boolean
 from database.db import Base
+from google.protobuf.descriptor import FieldDescriptor
 
-# Import the generated protobuf classes
-from pythonProtos.user_pb2 import (User, RegisterRequest, RegisterResponse, AuthResponse)
-from pythonProtos.images_pb2 import (Image, MissingImage)
+from protos.generated.user_pb2 import (User, RegisterRequest, RegisterResponse, AuthResponse)
+from protos.generated.images_pb2 import (Image, MissingImage)
 
-# Helper function to convert proto fields to SQLAlchemy columns
-def proto_to_sqlalchemy_column(proto_field):
-    if proto_field.type == proto_field.TYPE_INT32:
-        return Column(Integer)
-    elif proto_field.type == proto_field.TYPE_INT64:
-        return Column(Integer)
-    elif proto_field.type == proto_field.TYPE_STRING:
-        return Column(String)
-    else:
-        raise ValueError(f"Unsupported proto field type: {proto_field.type}")
+# Protobuf to SQLAlchemy type mapping
+TYPE_MAP = {
+    FieldDescriptor.TYPE_DOUBLE: Float,
+    FieldDescriptor.TYPE_FLOAT: Float,
+    FieldDescriptor.TYPE_INT64: Integer,
+    FieldDescriptor.TYPE_UINT64: Integer,
+    FieldDescriptor.TYPE_INT32: Integer,
+    FieldDescriptor.TYPE_FIXED64: Integer,
+    FieldDescriptor.TYPE_FIXED32: Integer,
+    FieldDescriptor.TYPE_BOOL: Boolean,
+    FieldDescriptor.TYPE_STRING: String,
+    FieldDescriptor.TYPE_BYTES: String,
+    FieldDescriptor.TYPE_UINT32: Integer,
+    FieldDescriptor.TYPE_SFIXED32: Integer,
+    FieldDescriptor.TYPE_SFIXED64: Integer,
+    FieldDescriptor.TYPE_SINT32: Integer,
+    FieldDescriptor.TYPE_SINT64: Integer,
+}
 
-# Generate SQLAlchemy models from proto definitions
-def generate_model(proto_message, base_class):
-    class_name = proto_message.DESCRIPTOR.name
-    class_dict = {
-        '__tablename__': class_name.lower() + 's',
-        '__protobuf_meta__': ProtobufSerializer(proto_message)
-    }
+def get_protobuf_messages(module):
+    messages = []
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and hasattr(obj, 'DESCRIPTOR') and hasattr(obj.DESCRIPTOR, 'fields'):
+            messages.append(obj)
+    return messages
 
-    for field in proto_message.DESCRIPTOR.fields:
-        if field.name == 'id':
-            class_dict[field.name] = Column(Integer, primary_key=True)
-        elif field.name.endswith('_id'):
-            referenced_table = field.name[:-3] + 's'
-            class_dict[field.name] = Column(Integer, ForeignKey(f'{referenced_table}.id'))
-        elif field.name == 'created_at':
-            class_dict[field.name] = Column(DateTime, default=datetime.utcnow)
-        else:
-            class_dict[field.name] = proto_to_sqlalchemy_column(field)
-
-    return type(class_name, (base_class, ProtobufMixin), class_dict)
+def generate_sqlalchemy_model(proto_class):
+    fields = []
+    descriptor = proto_class.DESCRIPTOR
+    
+    for field in descriptor.fields:
+        field_type = TYPE_MAP.get(field.type, String)  # Default to String if type not mapped
+        column = Column(field.name.lower(), field_type)
+        fields.append(column)
+    
+    model_class_name = descriptor.name
+    attrs = {'__tablename__': model_class_name.lower(), '__table_args__': {'extend_existing': True}}
+    for field in fields:
+        attrs[field.name] = field
+    
+    model_class = type(model_class_name, (Base,), attrs)
+    return model_class
 
 # Generate models
 def UserModel():
-    return generate_model(User, Base)
-def RegisterRequest():
-    return generate_model(RegisterRequest, Base)
-def RegisterResponse():
-    return generate_model(RegisterResponse, Base)
-def AuthResponse():
-    return generate_model(AuthResponse, Base)
-def ImageModel():
-    return generate_model(Image, Base)
-def MissingImageModel():
-    return generate_model(MissingImage, Base)
+    proto_class = get_protobuf_messages(User)
+    return generate_sqlalchemy_model(proto_class)
 
-# Add relationships
-# User.images = relationship("Image", back_populates="user")
-# Image.user = relationship("User", back_populates="images")
+def RegisterRequest():
+    proto_class = get_protobuf_messages(RegisterRequest)
+    return generate_sqlalchemy_model(proto_class)
+
+def RegisterResponse():
+    proto_class = get_protobuf_messages(RegisterResponse)
+    return generate_sqlalchemy_model(proto_class)
+
+def AuthResponse():
+    proto_class = get_protobuf_messages(AuthResponse)
+    return generate_sqlalchemy_model(proto_class)
+
+def ImageModel():
+    proto_class = get_protobuf_messages(Image)
+    return generate_sqlalchemy_model(proto_class)
+
+def MissingImageModel():
+    proto_class = get_protobuf_messages(MissingImage)
+    return generate_sqlalchemy_model(proto_class)
 

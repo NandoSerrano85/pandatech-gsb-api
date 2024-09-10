@@ -1,5 +1,6 @@
 import cv2, os, struct, zlib, csv
 import numpy as np
+from pprint import pprint
 
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
@@ -99,21 +100,91 @@ def read_local_csv(file_path):
                     result_dict[headers[i]].append(value)
     
     return result_dict
+def find_index(lst, element):
+    try:
+        return lst.index(element)
+    except ValueError:
+        return -1 
+
+def sort_csv_data_by_type_optimized(csv_data, path, type):
+    index_data = []
+    data = dict()
+    total = 0
+    local_type = None
+
+    if type == "UVDTF 40oz Top" or type == "UVDTF 40oz Bottom":
+        local_type = "UVDTF 40oz"
+    else:
+         local_type = type
+    
+    local_path = "{}{}".format(path, local_type)
+
+    for n in range(len(csv_data['Type'])):
+        if csv_data['Type'][n] == local_type:
+            index_data.append(n)
+
+    if local_type == "UVDTF 40oz":
+        data["UVDTF 40oz Top"] = {'Title':[], 'Size':[], 'Total':[]}
+        data["UVDTF 40oz Bottom"] = {'Title':[], 'Size':[], 'Total':[]}
+    else:
+        data[type] = {'Title':[], 'Size':[], 'Total':[]}
+
+    for n in index_data:
+        title_total = int(csv_data['Total'][n])
+        if local_type == "UVDTF 40oz":
+            title_top = "{}/Top/{}.png".format(local_path, csv_data['Product title'][n])
+            title_bottom = "{}/Bottom/{} (Bottom).png".format(local_path, csv_data['Product title'][n])
+            i_top = find_index(data["UVDTF 40oz Top"]['Title'], title_top)
+            i_bottom = find_index(data["UVDTF 40oz Bottom"]['Title'], title_bottom)
+
+            if i_top < 0 and i_bottom < 0:
+                data["UVDTF 40oz Top"]['Title'].append(title_top)
+                data["UVDTF 40oz Top"]['Size'].append('Top')
+                data["UVDTF 40oz Top"]['Total'].append(title_total)
+                data["UVDTF 40oz Bottom"]['Title'].append(title_bottom)
+                data["UVDTF 40oz Bottom"]['Size'].append('Bottom')
+                data["UVDTF 40oz Bottom"]['Total'].append(title_total)
+            else:
+                data["UVDTF 40oz Top"]['Total'][i_top] += title_total
+                data["UVDTF 40oz Bottom"]['Total'][i_bottom] += title_total
+
+        else:
+            title = "{}/{}.png".format(local_path, csv_data['Product title'][n])
+            i = find_index(data[type]['Title'], title)
+            if i < 0:
+                data[type]['Title'].append(title)
+                data[type]['Size'].append(csv_data['Size'][n])
+                data[type]['Total'].append(title_total)
+            else:
+                if csv_data['Size'][n] == data[type]['Size'][i]:
+                    data[type]['Total'][i] += title_total
+                else:
+                    data[type]['Title'].append(title)
+                    data[type]['Size'].append(csv_data['Size'][n])
+                    data[type]['Total'].append(title_total)
+        total += title_total
+
+    data['Type Total'] = total
+    return data
 
 def select_csv_data_by_type(csv_data, local_path, type=''):
     index_data = []
-    selected_data={'Product title':[], 'Type':[], 'Size':[]}
+    selected_data={'Title':[], 'Type':[], 'Size':[]}
 
     if type == '':
         for n in range(len(csv_data['Type'])):
             for _ in range(int(csv_data['Total'][n])):
                 if csv_data['Type'][n] == "UVDTF 40oz":
-                    selected_data['Product title'].append("{}/Top/{}.png".format(local_path, csv_data['Product title'][n]))
-                    selected_data['Product title'].append("{}/Bottom/{}.png".format(local_path, csv_data['Product title'][n]))
+                    selected_data['Title'].append("{}/Top/{}.png".format(local_path, csv_data['Product title'][n]))
+                    selected_data['Type'].append('UVDTF 40oz Top')
+                    selected_data['Size'].append('Top')
+                    selected_data['Title'].append("{}/Bottom/{} (Bottom).png".format(local_path, csv_data['Product title'][n]))
+                    selected_data['Type'].append('UVDTF 40oz Bottom')
+                    selected_data['Size'].append('Bottom')
                 else:
-                    selected_data['Product title'].append("{}/{}.png".format(local_path, csv_data['Product title'][n]))
-                selected_data['Type'].append(csv_data['Type'][n])
-                selected_data['Size'].append(csv_data['Size'][n])
+                    selected_data['Title'].append("{}/{}.png".format(local_path, csv_data['Product title'][n]))
+                    selected_data['Type'].append(csv_data['Type'][n])
+                    selected_data['Size'].append(csv_data['Size'][n])
 
         return selected_data
     
@@ -123,9 +194,17 @@ def select_csv_data_by_type(csv_data, local_path, type=''):
     
     for n in index_data:
         for _ in range(int(csv_data['Total'][n])):
-            selected_data['Product title'].append("{}/{}.png".format(local_path, csv_data['Product title'][n]))
-            selected_data['Type'].append(csv_data['Type'][n])
-            selected_data['Size'].append(csv_data['Size'][n])
+            if csv_data['Type'][n] == "UVDTF 40oz":
+                selected_data['Title'].append("{}/Top/{}.png".format(local_path, csv_data['Product title'][n]))
+                selected_data['Type'].append('UVDTF 40oz Top')
+                selected_data['Size'].append('Top')
+                selected_data['Title'].append("{}/Bottom/{} (Bottom).png".format(local_path, csv_data['Product title'][n]))
+                selected_data['Type'].append('UVDTF 40oz Bottom')
+                selected_data['Size'].append('Bottom')
+            else:
+                selected_data['Title'].append("{}/{}.png".format(local_path, csv_data['Product title'][n]))
+                selected_data['Type'].append(csv_data['Type'][n])
+                selected_data['Size'].append(csv_data['Size'][n])
     return selected_data
 
 def print_progress_bar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -244,7 +323,8 @@ def get_order_data(orders):
                         item_quantity = item['quantity']
                     else:
                         item_size = ''
-                        item_quantity = item['quantity']*PACK_LISTS[item['variant_title']]
+                        variant_title = item['variant_title'] if item['variant_title'] != None else 'Default title'
+                        item_quantity = item['quantity']*PACK_LISTS[variant_title]
                     for _ in range(item_quantity):
                         if item_type == 'UVDTF 40oz':
                             titles.append("{}{}/Top/{}.png".format(ROOT_FOLDER, item_type, item['title']))

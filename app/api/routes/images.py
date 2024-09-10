@@ -1,24 +1,27 @@
 from fastapi import APIRouter, Depends, HTTPException
 import os, shopify, multiprocessing
 from dotenv import load_dotenv
-from ImageApp.app.core.util import (
+from app.core.util import (
     get_order_data,
 )
 from app.models.model_protos import (
     MissingImageModel
 )
-from ImageApp.app.core.constants import (
+from app.core.constants import (
     TABLE_DATA,
     MISSING_TABLE_DATA,
     All_TYPES,
     STD_DPI,
     MK_DPI,
+    ROOT_FOLDER,
 )
-from ImageApp.app.core.gang_sheet_builder import (
+from app.core.gang_sheet_builder import (
     create_gang_sheet,
     create_gang_sheet_kwargs,
 )
-from app.core.config import settings
+from app.core.config import Settings
+
+settings = Settings()
 
 load_dotenv()
 

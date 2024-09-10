@@ -1,4 +1,5 @@
-ROOT_FOLDER = '/Users/fserrano/Desktop/'
+ROOT_FOLDER_LOCAL= '/Users/fserrano/Desktop/'
+ROOT_FOLDER = '/app/data/'
 DTF_DIR_CLEANUP = '{}DTF Cleanup/'.format(ROOT_FOLDER)
 DTF_DIR = '{}DTF/'.format(ROOT_FOLDER)
 UVDTF_16OZ_DIR_CLEANUP = '{}UVDTF 16oz Cleanup/'.format(ROOT_FOLDER)
@@ -110,7 +111,7 @@ CANVAS = {
 
 DTF_MAX_SIZE = 'Adult+'
 
-UVDTF_GANG_SHEET_MAX_WIDTH = 22.5
+UVDTF_GANG_SHEET_MAX_WIDTH = 22.7
 
 UVDTF_GANG_SHEET_MAX_ROW_16OZ = 5
 UVDTF_GANG_SHEET_MAX_ROW_DECAL = 5
@@ -125,7 +126,7 @@ UVDTF_GANG_SHEET_MAX_ROW = {
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_MAX_ROW_40OZ_BOTTOM,
 }
 
-UVDTF_GANG_SHEET_SPACING_16OZ = {'width': 0.2, 'height': 0.4}
+UVDTF_GANG_SHEET_SPACING_16OZ = {'width': 0.26, 'height': 0.5}
 UVDTF_GANG_SHEET_SPACING_DECAL = {'width': 0.6, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_MK = {'width': 0.0, 'height': 0.0}
 UVDTF_GANG_SHEET_SPACING_40OZ_TOP = {'width': 0.4, 'height': 0.3}

@@ -1,0 +1,42 @@
+# Use an official Python runtime as a parent image
+FROM python:3.10-slim
+
+# Set environment variables
+ENV NODE_VERSION=14.x
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    build-essential \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install protobuf compiler
+RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.4/protoc-3.19.4-linux-x86_64.zip \
+    && unzip protoc-3.19.4-linux-x86_64.zip -d protoc3 \
+    && mv protoc3/bin/* /usr/local/bin/ \
+    && mv protoc3/include/* /usr/local/include/ \
+    && rm -rf protoc3 protoc-3.19.4-linux-x86_64.zip
+
+# Install Python dependencies
+RUN pip install protobuf grpcio-tools
+
+# Install Node.js dependencies
+RUN npm install -g grpc-tools
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Run the protoc script when the container launches
+# CMD ["bash", "your_protoc_script.sh"]
+CMD ["/bin/bash"]

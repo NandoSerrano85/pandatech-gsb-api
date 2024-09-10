@@ -1,6 +1,6 @@
 import re
-from croppping import crop_transparent
-from resizing import resize_image_by_inches
+from app.core.croppping import crop_transparent
+from app.core.resizing import resize_image_by_inches
 from app.core.util import (
     create_folder,
     find_png_files,
