@@ -6,12 +6,17 @@ service UserService {
   rpc RegisterUser (RegisterRequest) returns (RegisterResponse) {}
   rpc AuthenticateUser (AuthRequest) returns (AuthResponse) {}
   rpc GetUser (UserRequest) returns (User) {}
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {}
 }
 
 message RegisterRequest {
   string username = 1;
   string password = 2;
   string email = 3;
+  string firstname = 4;
+  string lastname = 5;
+  string store_url = 6;
+  string api_access_token = 7;
 }
 
 message RegisterResponse {
@@ -28,7 +33,7 @@ message AuthRequest {
 message AuthResponse {
   bool success = 1;
   string message = 2;
-  string token = 3;  // You might want to return a JWT token for session management
+  string token = 3;
 }
 
 message UserRequest {
@@ -38,9 +43,26 @@ message UserRequest {
 message User {
   int32 id = 1;
   string username = 2;
-  string email = 3;
-  string store_url = 4;
-  string api_key = 5;
+  string firstname = 3;
+  string lastname = 4;
+  string email = 5;
+  string store_url = 6;
+  string api_key = 7;
+  string api_access_token = 8;
+  string api_version = 9;
+}
+
+message UpdateUserRequest {
+  int32 id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string email = 4;
+  string store_url = 5;
   string api_access_token = 6;
-  string api_version = 7;
+}
+
+message UpdateUserResponse {
+  bool success = 1;
+  string message = 2;
+  User updated_user = 3;
 }

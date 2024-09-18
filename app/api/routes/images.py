@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-import os, shopify, multiprocessing
+import shopify
 from dotenv import load_dotenv
 from app.core.util import (
     get_order_data,
@@ -15,9 +15,8 @@ from app.core.constants import (
     MK_DPI,
     ROOT_FOLDER,
 )
-from app.core.gang_sheet_builder import (
-    create_gang_sheet,
-    create_gang_sheet_kwargs,
+from app.core.gang_sheet_builder_v2 import (
+    create_gang_sheets,
 )
 from app.core.config import Settings
 
@@ -41,33 +40,30 @@ def create_gangsheets_from_shopify_orders():
     missing_data_dict = MISSING_TABLE_DATA
     order_start, order_end = 999999999, 0
     order_range = ''
-    data = dict()
+    data = {
+        'DTF': {'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF 16oz': {'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF Decal':{'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'MK':{'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF 40oz Top':{'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF 40oz Bottom':{'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'Custom': {'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF Bookmark': {'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        'UVDTF Lid': {'Title':[], 'Size':[], 'Total':[], 'Type Total': 0},
+        }
 
     # if more than 50 open orders logic for pagination else no need for pagination
     if len(orders) > 50:
         while orders.has_next_page():
             # gets all order data and format title according to need for gangsheet builder
-            temp = get_order_data(orders)
+            temp = get_order_data(orders, data)
 
-            order_data['Title'].append(temp[0])
-            order_data['Type'].append(temp[1])
-            order_data['Size'].append(temp[2])
-            order_data['Total'].append(temp[3])
-            order_start = min(order_start, temp[4])
-            order_end = max(order_end, temp[5])
+            order_start = min(order_start, temp[0])
+            order_end = max(order_end, temp[1])
             next_url = orders.next_page_url
             orders = shopify.Order().find(from_=next_url)
     else:
-        order_data['Title'], order_data['Type'], order_data['Size'], order_data['Total'],  order_start, order_end = get_order_data(orders)
-
-    # clean up
-    for n in range(len(order_data['Type'])):
-        if order_data['Type'][n] not in data:
-            data[order_data['Type'][n]] = {'Title': [], 'Size': [], 'Total': []}
-
-        data[order_data['Type'][n]]['Title'].append(order_data['Title'][n])
-        data[order_data['Type'][n]]['Size'].append(order_data['Size'][n])
-        data[order_data['Type'][n]]['Total'].append(order_data['Total'][n])
+        order_start, order_end = get_order_data(orders, data)
 
     order_range = '{} - {}'.format(order_end, order_start)
 
@@ -90,10 +86,10 @@ def create_gangsheets_from_shopify_orders():
         if t not in data:
             continue
         if t == 'DTF':
-            missing_data = create_gang_sheet(input_images=data[t]['Title'], image_type=t, gang_sheet_type='DTF', output_path=ROOT_FOLDER, order_range=order_range, image_size=data[t]['Size'],  dpi=target_dpi)
+            gs_type = 'DTF'
         else:
-            missing_data = create_gang_sheet(input_images=data[t]['Title'], image_type=t, gang_sheet_type='UVDTF', output_path=ROOT_FOLDER, order_range=order_range, dpi=target_dpi, text='Singles')
-
+            gs_type = 'UVDTF'
+        missing_data = create_gang_sheets(image_data=data[t], image_type=t, gang_sheet_type=gs_type, output_path=ROOT_FOLDER, order_range=order_range, total_images=orders[t]['Type Total'],  dpi=target_dpi)
         if missing_data:
             if len(missing_data_dict['Title']) == 0:
                 missing_data_dict['Title'] = missing_data['Title']
@@ -106,31 +102,6 @@ def create_gangsheets_from_shopify_orders():
                 missing_data_dict['Total'].append(missing_data['Total'])
                 missing_data_dict['Size'].append(missing_data['Size'])
 
-    #     pool = multiprocessing.Pool(processes=4)
-    #     if t == 'DTF':
-    #         missing_data = pool.map(create_gang_sheet_kwargs, [{'input_images':data[t]['Title'], 'image_type':t, 'gang_sheet_type':'DTF', 'output_path':ROOT_FOLDER, 'order_range':order_range, 'image_size':data[t]['Size'], 'dpi':target_dpi}])
-    #     else:
-    #         missing_data = pool.map(create_gang_sheet_kwargs, [{'input_images':data[t]['Title'], 'image_type':t, 'gang_sheet_type':'UVDTF', 'output_path':ROOT_FOLDER, 'order_range':order_range, 'dpi':target_dpi, 'text':'Singles'}])
-
-    #     if missing_data:
-    #         for msd in missing_data:
-    #             if not msd:
-    #                 continue
-    #             if len(missing_data_dict['Title']) == 0:
-    #                 missing_data_dict['Title'] = msd['Title']
-    #                 missing_data_dict['Type'] = msd['Type']
-    #                 missing_data_dict['Total'] = msd['Total']
-    #                 missing_data_dict['Size'] = msd['Size']
-    #             else:
-    #                 missing_data_dict['Title'].append(msd['Title'])
-    #                 missing_data_dict['Type'].append(msd['Type'])
-    #                 missing_data_dict['Total'].append(msd['Total'])
-    #                 missing_data_dict['Size'].append(msd['Size'])
-
-    # pool.close()
-    # print("Pool is closed. No new tasks will be accepted.")
-    # pool.join()
-    # print("Pool has been joined. All processes have exited.")
     shopify.ShopifyResource.clear_session()
 
     return MissingImageModel({'title': missing_data_dict['Title'], 'type': missing_data_dict['Type'], 'size': missing_data_dict['Size'], 'total': missing_data_dict['Total']})

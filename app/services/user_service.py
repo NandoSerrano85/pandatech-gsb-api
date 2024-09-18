@@ -14,7 +14,7 @@ from protos.generated.user_pb2_grpc import UserServiceServicer
 class UserServicer(UserServiceServicer):
     def RegisterUser(self, request, context):
         db = next(get_db())
-        result = self._register_user(db, request.username, request.password, request.email)
+        result = self._register_user(db, request.username, request.password, request.email, request.firstname, request.lastname, request.store_url, request.api_access_token)
         if not result['success']:
             return RegisterResponse(success=False, message=result['message'])
         return RegisterResponse(success=True, message=result['message'], user_id=result['user'].id)
@@ -41,13 +41,13 @@ class UserServicer(UserServiceServicer):
     def _verify_password(self, stored_password: bytes, provided_password: str) -> bool:
         return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password)
 
-    def _register_user(self, db: Session, username: str, password: str, email: str):
+    def _register_user(self, db: Session, username: str, password: str, email: str, firstname: str, lastname: str, store_url: str, api_access_token: str):
         existing_user = db.query(UserModel).filter(UserModel.username == username).first()
         if existing_user:
             return {'success': False, 'message': "Username already exists"}
         
         hashed_password = self._hash_password(password)
-        new_user = UserModel(username=username, email=email, hashed_password=hashed_password)
+        new_user = UserModel(username=username, email=email, hashed_password=hashed_password, firstname=firstname, lastname=lastname, store_url=store_url, api_access_token=api_access_token)
         db.add(new_user)
         db.commit()
         db.refresh(new_user)

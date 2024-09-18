@@ -286,11 +286,7 @@ def png_to_cmyk_tiff(input_path, output_path):
     # else:
     #     print("Failed to save the image")
 
-def get_order_data(orders):
-    titles = []
-    types = []
-    sizes = []
-    quantity = []
+def get_order_data(orders, data):
     is_first = True
     first_order = None
     last_order = None
@@ -310,11 +306,12 @@ def get_order_data(orders):
                         item_type = item_type[0].strip()
                     else:
                         item_type = item_type[1].strip()
+                    
                     if 'Custom' in item['title'] or item_type not in All_TYPES_DICT:
-                        titles.append("{} - {}".format(item['title'], order_dict['order_number']))
-                        types.append('Custom')
-                        sizes.append(item['variant_title'])
-                        quantity.append(item['quantity'])
+                        item_title = "{} - {}".format(item['title'], order_dict['order_number'])
+                        data['Custom']['Title'].append(item_title)
+                        data['Custom']['Total'].append(item['quantity'])
+                        data['Custom']['Size'].append(item['variant_title'])
                         continue
                     item_type = All_TYPES_DICT[item_type]
                     item_title = "{}{}/{}.png".format(ROOT_FOLDER, item_type, item['title'])
@@ -325,23 +322,40 @@ def get_order_data(orders):
                         item_size = ''
                         variant_title = item['variant_title'] if item['variant_title'] != None else 'Default title'
                         item_quantity = item['quantity']*PACK_LISTS[variant_title]
-                    for _ in range(item_quantity):
-                        if item_type == 'UVDTF 40oz':
-                            titles.append("{}{}/Top/{}.png".format(ROOT_FOLDER, item_type, item['title']))
-                            types.append('UVDTF 40oz Top')
-                            sizes.append('Top')
-                            quantity.append(item_quantity)
-                            titles.append("{}{}/Bottom/{} (Bottom).png".format(ROOT_FOLDER, item_type, item['title']))
-                            types.append('UVDTF 40oz Bottom')
-                            sizes.append('Bottom')
-                            quantity.append(item_quantity)
-                        else:
-                            titles.append(item_title)
-                            types.append(item_type)
-                            sizes.append(item_size)
-                            quantity.append(item_quantity)
 
-    return titles, types, sizes, quantity, first_order, last_order
+                    if item_type == 'UVDTF 40oz':
+                        item_title_top = "{}{}/Top/{}.png".format(ROOT_FOLDER, item_type, item['title'])
+                        item_title_bottom = "{}{}/Bottom/{} (Bottom).png".format(ROOT_FOLDER, item_type, item['title'])
+                        i_top = find_index(data["UVDTF 40oz Top"]['Title'], item_title_top)
+                        i_bottom = find_index(data["UVDTF 40oz Bottom"]['Title'], item_title_bottom)
+                        if i_top < 0 and i_bottom < 0:
+                            data['UVDTF 40oz Top']['Title'].append(item_title_top)
+                            data['UVDTF 40oz Top']['Total'].append(item_quantity)
+                            data['UVDTF 40oz Top']['Size'].append('Top')
+                            data['UVDTF 40oz Bottom']['Title'].append(item_title_bottom)
+                            data['UVDTF 40oz Bottom']['Total'].append(item_quantity)
+                            data['UVDTF 40oz Bottom']['Size'].append('Bottom')
+                        else:
+                            data["UVDTF 40oz Top"]['Total'][i_top] += item_quantity
+                            data["UVDTF 40oz Bottom"]['Total'][i_bottom] += item_quantity
+                        data['UVDTF 40oz Top']['Type Total'] += item_quantity
+                        data['UVDTF 40oz Bottom']['Type Total'] += item_quantity   
+                    else:
+                        i = find_index(data[type]['Title'], item_title)
+                        if i < 0:
+                            data[item_type]['Title'].append(item_title)
+                            data[item_type]['Size'].append(item_size)
+                            data[item_type]['Total'].append(item_quantity)
+                        else:
+                            if item_size == data[type]['Size'][i]:
+                                data[item_type]['Total'][i] += item_quantity
+                            else:
+                                data[item_type]['Title'].append(item_title)
+                                data[item_type]['Size'].append(item_size)
+                                data[item_type]['Total'].append(item_quantity)
+                        data[item_type]['Type Total'] += item_quantity
+
+    return first_order, last_order
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

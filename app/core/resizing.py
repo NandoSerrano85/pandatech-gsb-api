@@ -29,12 +29,8 @@ def get_dpi_from_pil(image_path):
     This function creates a canvas and centers the image into the canvas
 """
 def fit_image_to_center_canvas(resized_img, new_width_px, new_height_px, target_dpi, image_type, image_size=None):
-    if image_size:
-        canvas_width_px = inches_to_pixels(CANVAS[image_type][image_size]['width'], target_dpi)
-        canvas_height_px = inches_to_pixels(CANVAS[image_type][image_size]['height'], target_dpi)
-    else:
-        canvas_width_px = inches_to_pixels(CANVAS[image_type]['width'], target_dpi)
-        canvas_height_px = inches_to_pixels(CANVAS[image_type]['height'], target_dpi)
+    canvas_width_px = inches_to_pixels(CANVAS[image_type]['width'], target_dpi)
+    canvas_height_px = inches_to_pixels(CANVAS[image_type]['height'], target_dpi)
 
     background = np.zeros((canvas_height_px, canvas_width_px, 4), dtype=np.uint8)
 
@@ -67,19 +63,38 @@ def arch_image(image, image_type, image_size, target_dpi, arch_amount=60):
     # Get image dimensions
     height, width, channels = image.shape
     
-    # Create a new image with extra height for the arch
-    result = np.zeros((height + arch_amount, width, channels), dtype=np.uint8)
+    # Calculate new dimensions to accommodate the arch
+    new_height = height + arch_amount
+    new_width = width
+    
+    # Create meshgrid for the new dimensions
+    x, y = np.meshgrid(np.arange(new_width), np.arange(new_height))
     
     # Calculate the arch
-    x = np.arange(width)
-    y_offset = abs(arch_amount) - (np.sin(np.pi * x / width) * arch_amount).astype(int)
+    center_x = new_width / 2
+    arch_factor = arch_amount / (center_x ** 2)
+    y_offset = arch_factor * (x - center_x) ** 2
     
-    # Apply the arch effect
-    for i in range(width):
-        result[y_offset[i]:y_offset[i]+height, i] = image[:, i]
-        
+    # Apply the transformation
+    x_mapped = x
+    y_mapped = y - y_offset
     
-    return fit_image_to_center_canvas(result, result.shape[1], result.shape[0], target_dpi, image_type, image_size=image_size)
+    # Normalize coordinates
+    x_mapped = x_mapped / (new_width - 1)
+    y_mapped = y_mapped / (height - 1)
+    
+    # Ensure coordinates are within bounds
+    x_mapped = np.clip(x_mapped, 0, 1)
+    y_mapped = np.clip(y_mapped, 0, 1)
+    
+    # Remap the image
+    mapped_x = (x_mapped * (width - 1)).astype(np.float32)
+    mapped_y = (y_mapped * (height - 1)).astype(np.float32)
+    
+    # Create a new image with the arched dimensions
+    result = cv2.remap(image, mapped_x, mapped_y, cv2.INTER_LINEAR, None, cv2.BORDER_CONSTANT, (0, 0, 0, 0))
+    
+    return fit_image_to_center_canvas(result, new_width, new_height, target_dpi, image_type, image_size=image_size)
 
 """
     This function resizes an image based on inches
@@ -120,7 +135,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
      # Calculate scale factor
     scale_factor = target_largest_side_inches / current_largest_side_inches
     
-    if image_type == 'DTF' or image_type == 'UVDTF Decal':
+    if image_type == 'DTF' or image_type == 'UVDTF Decal' or image_type == 'UVDTF Lid':
         # Calculate new dimensions
         new_width_inches = (current_width_inches * scale_factor)
         new_height_inches = (current_height_inches * scale_factor)
@@ -128,7 +143,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
          # Calculate new size in pixels based on new dementions inches and DPI
         new_width_px = inches_to_pixels(new_width_inches, target_dpi)
         new_height_px = inches_to_pixels(new_height_inches, target_dpi)
-    elif image_type == 'MK':
+    elif image_type == 'MK' or image_type == 'UVDTF Bookmark':
         current_width = inches_to_pixels(current_width_inches, target_dpi)
         current_height = inches_to_pixels(current_height_inches, target_dpi)
 
@@ -156,7 +171,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     resized_img = cv2.resize(img, (new_width_px, new_height_px), interpolation=interpolation)
 
     # Fit the resized images into a canvas
-    if image_type == 'UVDTF Decal':
+    if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid':
         return fit_image_to_center_canvas(resized_img, new_width_px, new_height_px, target_dpi, image_type)
     elif image_type == 'MK':
         if (new_width_px > new_height_px) and is_new_mk:
@@ -167,7 +182,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     
     # Check in utils for code on arching still can't get to work properly
     # Arch bottom part of a 40oz cup wrap
-    if image_type == "UVDTF 40oz" and (image_size in CANVAS[image_type]):
+    if image_type == "UVDTF 40oz Bottom":
         # pass
         resized_img = arch_image(resized_img, image_type, image_size, target_dpi)
         

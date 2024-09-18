@@ -1,4 +1,6 @@
-ROOT_FOLDER_LOCAL= '/Users/fserrano/Desktop/'
+ROOT_FOLDER_LOCAL = '/Users/fserrano/Desktop/'
+ROOT_FOLDER_LOCAL_OUTPUT = '/Users/fserrano/Desktop/Printfiles/'
+ROOT_FOLDER_LOCAL_CSV = '/Users/fserrano/Desktop/'
 ROOT_FOLDER = '/app/data/'
 DTF_DIR_CLEANUP = '{}DTF Cleanup/'.format(ROOT_FOLDER)
 DTF_DIR = '{}DTF/'.format(ROOT_FOLDER)
@@ -8,6 +10,10 @@ UVDTF_DECAL_DIR_CLEANUP = '{}UVDTF Decal Cleanup/'.format(ROOT_FOLDER)
 UVDTF_DECAL_DIR = '{}UVDTF Decal/'.format(ROOT_FOLDER)
 UVDTF_MK_DIR_CLEANUP = '{}MK Cleanup/'.format(ROOT_FOLDER)
 UVDTF_MK_DIR = '{}MK/'.format(ROOT_FOLDER)
+UVDTF_BOOKMARK_DIR_CLEANUP = '{}UVDTF Bookmark Cleanup/'.format(ROOT_FOLDER)
+UVDTF_BOOKMAK_DIR = '{}UVDTF Bookmark/'.format(ROOT_FOLDER)
+UVDTF_LID_DIR_CLEANUP = '{}UVDTF Lid Cleanup/'.format(ROOT_FOLDER)
+UVDTF_LID_DIR = '{}UVDTF Lid/'.format(ROOT_FOLDER)
 UVDTF_40OZ_TOP_DIR_CLEANUP = '{}UVDTF 40oz/Top Cleanup/'.format(ROOT_FOLDER)
 UVDTF_40OZ_TOP_DIR = '{}UVDTF 40oz/Top/'.format(ROOT_FOLDER)
 UVDTF_40OZ_BOTTOM_DIR_CLEANUP = '{}UVDTF 40oz/Bottom Cleanup/'.format(ROOT_FOLDER)
@@ -38,13 +44,21 @@ DIR_LIST = {
         'source': UVDTF_40OZ_BOTTOM_DIR_CLEANUP,
         'destination': UVDTF_40OZ_BOTTOM_DIR,
     },
+    'UVDTF Bookmark':{
+        'source': UVDTF_BOOKMARK_DIR_CLEANUP,
+        'destination': UVDTF_BOOKMAK_DIR,
+    },
+    'UVDTF Lid':{
+        'source': UVDTF_LID_DIR_CLEANUP,
+        'destination': UVDTF_LID_DIR,
+    },
 }
 MK_DPI = 950
 STD_DPI = 400
 TEXT_AREA_HEIGHT = 0.015
 SHEET_HEIGHT = 120
 
-All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom']
+All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid']
 
 All_TYPES_DICT = {
     'DTF Transfer': 'DTF',
@@ -53,7 +67,8 @@ All_TYPES_DICT = {
     'UVDTF Decal': 'UVDTF Decal',
     'Motel Keychain': 'MK',
     '40oz UVDTF Tumbler Wrap': 'UVDTF 40oz',
-    'UVDTF Bookmark Decal': 'UVDTF Bookmark'
+    'UVDTF Bookmark Decal': 'UVDTF Bookmark',
+    'UVDTF Lid Decal': 'UVDTF Lid',
 }
 
 PACK_LISTS = {
@@ -101,12 +116,16 @@ SIZING = {
     'UVDTF Bookmark': { 'width': 5.5, 'height': 1.8 },
     'UVDTF 40oz Top': {'width': 11.3, 'height': 5 },
     'UVDTF 40oz Bottom': {'width': 10, 'height': 3.2 },
+    'UVDTF Bookmark': {'width': 5.5, 'height': 1.8 },
+    'UVDTF Lid': {'width': 2.75, 'height': 2.75 },
 }
 
 CANVAS = {
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
     'MK': { 'width': 1.5, 'height': 2.3 },
     'UVDTF 40oz Bottom': {'width': 10.3, 'height': 3.58, 'arch': 3},
+    'UVDTF Lid': {'width': 2.75, 'height': 2.75 },
+    'UVDTF Bookmark': {'width': 5.5, 'height': 1.8 },
 }
 
 DTF_MAX_SIZE = 'Adult+'
@@ -118,12 +137,16 @@ UVDTF_GANG_SHEET_MAX_ROW_DECAL = 5
 UVDTF_GANG_SHEET_MAX_ROW_MK = 15
 UVDTF_GANG_SHEET_MAX_ROW_40OZ_TOP = 4
 UVDTF_GANG_SHEET_MAX_ROW_40OZ_BOTTOM = 2
+UVDTF_GANG_SHEET_MAX_ROW_LID = 7
+UVDTF_GANG_SHEET_MAX_ROW_BOOKMARK = 10
 UVDTF_GANG_SHEET_MAX_ROW = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_MAX_ROW_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_MAX_ROW_DECAL,
     'MK': UVDTF_GANG_SHEET_MAX_ROW_MK,
     'UVDTF 40oz Top': UVDTF_GANG_SHEET_MAX_ROW_40OZ_TOP,
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_MAX_ROW_40OZ_BOTTOM,
+    'UVDTF Bookmark': UVDTF_GANG_SHEET_MAX_ROW_BOOKMARK,
+    'UVDTF Lid': UVDTF_GANG_SHEET_MAX_ROW_LID,
 }
 
 UVDTF_GANG_SHEET_SPACING_16OZ = {'width': 0.26, 'height': 0.5}
@@ -131,24 +154,32 @@ UVDTF_GANG_SHEET_SPACING_DECAL = {'width': 0.6, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_MK = {'width': 0.0, 'height': 0.0}
 UVDTF_GANG_SHEET_SPACING_40OZ_TOP = {'width': 0.4, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_40OZ_BOTTOM  = {'width': 0.4, 'height': 0.3}
+UVDTF_GANG_SHEET_SPACING_BOOKMARK = {'width': 0.3, 'height': 0.3}
+UVDTF_GANG_SHEET_SPACING_LID = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_SPACING_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_SPACING_DECAL,
     'MK': UVDTF_GANG_SHEET_SPACING_MK,
     'UVDTF 40oz Top': UVDTF_GANG_SHEET_SPACING_40OZ_TOP,
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_SPACING_40OZ_BOTTOM,
+    'UVDTF Bookmark': UVDTF_GANG_SHEET_SPACING_BOOKMARK,
+    'UVDTF Lid': UVDTF_GANG_SHEET_SPACING_LID,
 }
 UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ = 9.4
 UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL = 4.0
 UVDTF_GANG_SHEET_MAX_HEIGHT_MK = 2.3
 UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_TOP = 11.3
 UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_BOTTOM = 3.58
+UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK = 5.5
+UVDTF_GANG_SHEET_MAX_HEIGHT_LID = 2.75
 UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL,
     'MK': UVDTF_GANG_SHEET_MAX_HEIGHT_MK,
     'UVDTF 40oz Top':UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_TOP,
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_BOTTOM,
+    'UVDTF Bookmark': UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK,
+    'UVDTF Lid': UVDTF_GANG_SHEET_MAX_HEIGHT_LID,
 }
 
 DTF_GANG_SHEET_MAX_WIDTH = 23

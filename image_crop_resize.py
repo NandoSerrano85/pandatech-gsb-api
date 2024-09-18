@@ -17,15 +17,20 @@ from app.core.constants import (
 
 def main():
     allTypes = All_TYPES
-    allTypes = ['MK']
+    # allTypes = ['MK']
     is_new_mk = False
-    allTypes = ['UVDTF 16oz', 'MK', "UVDTF Decal", "DTF"]
-    # allTypes = ["UVDTF 40oz Top"]
+    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", "UVDTF 40oz Top", 'MK']
+    allTypes = ["DTF", "UVDTF Decal"]
 
     for t in allTypes:
-        dirName = "{}".format(t)
-        # dirName = "UVDTF 40oz/Top Cleanup"
-        dirName = "{} Cleanup".format(t)
+        # dirName = "ParisBerry"
+        # dirName = "{}".format(t)
+        if t == 'UVDTF 40oz Bottom':
+            dirName = "UVDTF 40oz/Bottom Cleanup"
+        elif t == 'UVDTF 40oz Top':
+            dirName = "UVDTF 40oz/Top Cleanup"
+        else:
+            dirName = "{} Cleanup".format(t)
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
         folderImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, dirName)
         destinationImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, t)
@@ -39,15 +44,17 @@ def main():
 
         pngFilePath, pngFileName = find_png_files(folderImagePath)
 
-
+        print(t)
         if len(pngFilePath) < 1:
             continue
-        print("Start {}\nFile Path: {}\n".format(t, folderImagePath))
-        #Cropping all images
-        print_progress_bar(0, len(pngFilePath), prefix = 'Cropping:', suffix = 'Complete', length = 50)
-        for n in range(0, len(pngFilePath)):
-            images.append(crop_transparent(pngFilePath[n]))
-            print_progress_bar(n+1, len(pngFilePath), prefix = 'Cropping:', suffix = 'Complete', length = 50)
+
+        if t != "UVDTF Lid":
+            print("Start {}\nFile Path: {}\n".format(t, folderImagePath))
+            #Cropping all images
+            print_progress_bar(0, len(pngFilePath), prefix = 'Cropping:', suffix = 'Complete', length = 50)
+            for n in range(0, len(pngFilePath)):
+                images.append(crop_transparent(pngFilePath[n]))
+                print_progress_bar(n+1, len(pngFilePath), prefix = 'Cropping:', suffix = 'Complete', length = 50)
 
 
         
@@ -65,13 +72,13 @@ def main():
             print_progress_bar(n+1, len(pngFilePath), prefix = 'Resizing:', suffix = 'Complete', length = 50)
 
         # # #Creating destination folder
-        create_folder(destinationImagePath)
+        # create_folder(destinationImagePath)
 
         print_progress_bar(0, len(pngFilePath), prefix = 'Saving:', suffix = 'Complete', length = 50)
         # #Saving all images to designated folder
         for n in range(0, len(pngFilePath)):
             if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
-                destinationImagePath = "{}UVDTF 40oz/Bottom/".format(ROOT_FOLDER_LOCAL)
+                destinationImagePath = "{}UVDTF 40oz/Bottom Test/".format(ROOT_FOLDER_LOCAL)
             elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
                 destinationImagePath = "{}UVDTF 40oz/Top/".format(ROOT_FOLDER_LOCAL)
             if (t == 'UVDTF 40oz Top' or t == 'UVDTF 40oz Bottom') and not created_dir:

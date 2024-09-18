@@ -1,6 +1,5 @@
 #!/bin/bash
 
-cd /app
 # Directory containing .proto files
 PROTO_DIR="./protos"
 
