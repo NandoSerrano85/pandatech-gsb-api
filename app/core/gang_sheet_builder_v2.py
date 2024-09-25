@@ -53,16 +53,16 @@ def process_image(img_path, image_type, image_size, dpi):
 def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, order_range, total_images, dpi=300, text='Single '):
     # Pre-calculate common values
     width_px = cached_inches_to_pixels(GANG_SHEET_MAX_WIDTH[gang_sheet_type], dpi)
-    height_px = cached_inches_to_pixels(GANG_SHEET_MAX_HEIGHT, dpi)
+    height_px = cached_inches_to_pixels(GANG_SHEET_MAX_HEIGHT[gang_sheet_type], dpi)
 
-    if gang_sheet_type == 'UVDTF':
+    if gang_sheet_type == 'UVDTF' or gang_sheet_type == 'Custom 2x2':
         total_rows = ceil(total_images / GANG_SHEET_MAX_ROW[gang_sheet_type][image_type])
         row_height = GANG_SHEET_MAX_ROW_HEIGHT[gang_sheet_type][image_type]
         spacing_height = GANG_SHEET_SPACING[gang_sheet_type][image_type]['height']
     else:
         average_row = statistics.median([GANG_SHEET_MAX_ROW[gang_sheet_type][size] for size in image_data['Size']])
         row_height = statistics.median([GANG_SHEET_MAX_ROW_HEIGHT[gang_sheet_type][size] for size in image_data['Size']])
-        total_rows = ceil(total_images / average_row)
+        total_rows = ceil(total_images / (average_row - 0.5))
         spacing_height = GANG_SHEET_SPACING[gang_sheet_type]['Adult+']['height']
 
     total_height = (row_height + spacing_height) * total_rows + spacing_height

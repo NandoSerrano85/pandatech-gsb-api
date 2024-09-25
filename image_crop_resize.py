@@ -17,24 +17,24 @@ from app.core.constants import (
 
 def main():
     allTypes = All_TYPES
-    # allTypes = ['MK']
     is_new_mk = False
-    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", "UVDTF 40oz Top", 'MK']
-    allTypes = ["DTF", "UVDTF Decal"]
+    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", "UVDTF Lid", 'MK']
+    allTypes = ["UVDTF 16oz"]
 
     for t in allTypes:
         # dirName = "ParisBerry"
         # dirName = "{}".format(t)
         if t == 'UVDTF 40oz Bottom':
-            dirName = "UVDTF 40oz/Bottom Cleanup"
+            dirName = "UVDTF 40oz/Bottom"
         elif t == 'UVDTF 40oz Top':
             dirName = "UVDTF 40oz/Top Cleanup"
         else:
             dirName = "{} Cleanup".format(t)
+        dirName = "Custom Cup Wraps"
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
         folderImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, dirName)
         destinationImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, t)
-        # destinationImagePath = folderImagePath
+        destinationImagePath = folderImagePath
         created_dir = False
         imageSize = None
         images = []
@@ -78,7 +78,7 @@ def main():
         # #Saving all images to designated folder
         for n in range(0, len(pngFilePath)):
             if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
-                destinationImagePath = "{}UVDTF 40oz/Bottom Test/".format(ROOT_FOLDER_LOCAL)
+                destinationImagePath = "{}UVDTF 40oz/Bottom/".format(ROOT_FOLDER_LOCAL)
             elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
                 destinationImagePath = "{}UVDTF 40oz/Top/".format(ROOT_FOLDER_LOCAL)
             if (t == 'UVDTF 40oz Top' or t == 'UVDTF 40oz Bottom') and not created_dir:

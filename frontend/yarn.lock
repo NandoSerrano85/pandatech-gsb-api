@@ -186,6 +186,20 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
+"@coreui/coreui@^5.1.0", "@coreui/coreui@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@coreui/coreui/-/coreui-5.1.2.tgz#0773c6f8b4ec59f0d9e04684d36b4d4b803bd0ae"
+  integrity sha512-ub7KfpLo5OomUQ2Ah6rvSgmX+JzJmJ7XfU951BYpcpveCdAy1GWaKhH83JGVqcKQyHVBe+z8Y5Z5s19WmWzilw==
+
+"@coreui/react@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@coreui/react/-/react-5.3.0.tgz#2d92ee862dd20a5cee1970ba57b5e654e2cd4d2e"
+  integrity sha512-NnJBydL5Kb3PVbj0HFgI5kfcGPXhzLg4G2yuBCZN4caiG3HOI1JxNpqXxCBNvAn3GQkMD+xunNhhcN+yNDDcDA==
+  dependencies:
+    "@coreui/coreui" "^5.1.0"
+    "@popperjs/core" "^2.11.8"
+    prop-types "^15.8.1"
+
 "@esbuild/aix-ppc64@0.21.5":
   version "0.21.5"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.21.5.tgz#c7184a326533fcdf1b8ee0733e21c713b975575f"
@@ -457,6 +471,11 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@popperjs/core@^2.11.8":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -659,6 +678,18 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
+
+"@use-gesture/core@10.3.1":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@use-gesture/core/-/core-10.3.1.tgz#976c9421e905f0079d49822cfd5c2e56b808fc56"
+  integrity sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==
+
+"@use-gesture/react@^10.3.1":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@use-gesture/react/-/react-10.3.1.tgz#17a743a894d9bd9a0d1980c618f37f0164469867"
+  integrity sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g==
+  dependencies:
+    "@use-gesture/core" "10.3.1"
 
 "@vitejs/plugin-react@^4.3.1":
   version "4.3.1"

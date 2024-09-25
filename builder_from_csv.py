@@ -43,11 +43,12 @@ def csv_reader_v1():
     print("All Done!")
 
 def csv_reader_v2():
-    order_range = "4842 - 4865"
-    order_csv = "Product Pick List 4842 - 4865 - Original.csv"
+    order_range = "4898 - 4916"
+    # order_range = "Rush 4908"
+    order_csv = "Product Pick List 4898 - 4916 - Original.csv"
     csvFilePath = "{}{}".format(ROOT_FOLDER_LOCAL_CSV, order_csv)
     orderDict = read_local_csv(csvFilePath)
-    All_TYPES = ['MK']
+    All_TYPES = ['UVDTF 40oz Bottom']
 
     for t in All_TYPES:
         gs_type = None
@@ -56,11 +57,12 @@ def csv_reader_v2():
 
         if orders['Type Total'] < 1:
             continue
-        pprint(orders)
         output_path = "{}{}/".format(ROOT_FOLDER_LOCAL_OUTPUT,order_range)
         create_folder(output_path)
         if t == 'DTF':
             gs_type = 'DTF'
+        elif t == 'Custom 2x2':
+            gs_type = 'Custom 2x2'
         else:
             gs_type = 'UVDTF'
             

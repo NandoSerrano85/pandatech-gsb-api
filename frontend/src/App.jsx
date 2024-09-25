@@ -12,6 +12,8 @@ import {
   Gangsheets,
   MissingImages,
   Profile,
+  GangsheetBuilderPOC,
+  Products,
  } from './pages';
 const App = () => {
   return (
@@ -21,11 +23,12 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="users" element={<Users />} />
           <Route path="open-orders" element={<OpenOrders />} />
+          <Route path="products" element={<Products />} />
           <Route path="upload-images" element={<UploadImages />} />
           <Route path="gangsheets" element={<Gangsheets />} />
           <Route path="missing-images" element={<MissingImages />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="gangsheet-builder-poc" element={<Profile />} />
+          <Route path="gangsheet-builder-poc" element={<GangsheetBuilderPOC />} />
         </Route>
       </Routes>
     </Router>

@@ -1,4 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import {
+  CDropdown as Dropdown,
+  CDropdownToggle as DropdownToggle,
+  CDropdownMenu as DropdownMenu,
+  CDropdownItem as DropdownItem,
+  CDropdownDivider as DropdownDivider,
+} from '@coreui/react';
 import { 
   MenuIcon,
   RefreshCwIcon,
@@ -14,6 +21,9 @@ import {
 import { useGesture } from '@use-gesture/react';
 
 const GangsheetBuilderPOC = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [fileMenuOpen, setFileMenuOpen] = useState(false);
+  const [resizeMenuOpen, setResizeMenuOpen] = useState(false);
   const [images, setImages] = useState([])
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
   const [dpi, setDpi] = useState(300)
@@ -29,8 +39,8 @@ const GangsheetBuilderPOC = () => {
 
   useEffect(() => {
     drawCanvas()
-    fitCanvasToContainer()
-  }, [canvasSize, canvasImages, zoom, pan])
+    // fitCanvasToContainer()
+  }, [canvasImages, zoom, pan])
 
   useEffect(() => {
     if (historyIndex >= 0) {
@@ -193,11 +203,20 @@ const GangsheetBuilderPOC = () => {
 
   const bind = useGesture(
     {
-      onDrag: ({ offset: [x, y] }) => {
-        setPan({ x, y })
+      onDrag: ({ delta: [dx, dy] }) => {
+        setPan(prevPan => ({
+          x: prevPan.x + dx,
+          y: prevPan.y + dy
+        }))
       },
-      onPinch: ({ offset: [d] }) => {
+      onPinch: ({ offset: [d], origin: [ox, oy], event }) => {
+        event.preventDefault()
         setZoom(d)
+        // Adjust pan to zoom around the pinch point
+        setPan(prevPan => ({
+          x: ox - (ox - prevPan.x) * d / zoom,
+          y: oy - (oy - prevPan.y) * d / zoom
+        }))
       },
     },
     {
@@ -241,83 +260,71 @@ const GangsheetBuilderPOC = () => {
     <div className="flex flex-col h-screen bg-gradient-to-r from-blue-400 to-purple-500">
       <header className="flex items-center justify-between p-4 bg-white/10 text-white">
         <div className="flex items-center space-x-4">
-            <div class="relative inline-block text-left md:hidden">
-                <div>
-                    <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
+            <Dropdown className="md:hidden" visible={mobileMenuOpen} onShow={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                <DropdownToggle>
                         <MenuIcon className="h-6 w-6" />
-                    </button>
-                </div>
-                <div class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                    <div class="py-1" role="none">
-                        {/* <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" --> */}
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-0" onClick={undo}>
-                            <UndoIcon className="mr-2 h-4 w-4" />
-                            <span>Undo</span>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-1" onClick={redo}>
-                            <RedoIcon className="mr-2 h-4 w-4" />
-                            <span>Redo</span>
-                        </a>
-                    </div>
-                    <div class="py-1" role="none">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2" onClick={saveCanvas}>
-                            <SaveIcon className="mr-2 h-4 w-4" />
-                            <span>Save</span>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-3" onClick={exportCanvas}>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Export</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="relative inline-block text-left">
-                <div>
-                    <button variant="ghost" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                        File
-                    </button>
-                </div>
-                <div class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                    <div class="py-1" role="none">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2" onClick={saveCanvas}>
-                            <SaveIcon className="mr-2 h-4 w-4" />
-                            <span>Save</span>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-3" onClick={exportCanvas}>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Export</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="relative inline-block text-left">
-                <div>
-                    <button variant="ghost" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                        Resize
-                    </button>
-                </div>
-                <div class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                    <div class="py-1" role="none">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2" onSelect={() => handleResize(8.5, 11)}>
-                            <span>Letter (8.5 x 11)</span>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2" onSelect={() => handleResize(11, 17)}>
-                            <span>Tabloid (11 x 17)</span>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2" onSelect={() => handleResize(18, 24)}>
-                            <span>Poster (18 x 24)</span>
-                        </a>
-                    </div>
-                    <div class="py-1" role="none">
-                        <div className="p-2">
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem href="#" onClick={undo}>
+                        <UndoIcon className="mr-2 h-4 w-4" />
+                        <span>Undo</span>
+                    </DropdownItem>
+                    <DropdownItem href="#" onClick={redo}>
+                        <RedoIcon className="mr-2 h-4 w-4" />
+                        <span>Redo</span>
+                    </DropdownItem>
+                    <DropdownDivider/>
+                    <DropdownItem href="#" onClick={saveCanvas}>
+                        <SaveIcon className="mr-2 h-4 w-4" />
+                        <span>Save</span>
+                    </DropdownItem>
+                    <DropdownItem href="#" onClick={exportCanvas}>
+                        <DownloadIcon className="mr-2 h-4 w-4" />
+                        <span>Export</span>
+                    </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+            <Dropdown visible={fileMenuOpen} onShow={() => setFileMenuOpen(!fileMenuOpen)}>
+                <DropdownToggle>
+                  File
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem href="#" className="flex" onClick={saveCanvas}>
+                        <SaveIcon className="mr-2 h-4 w-4" /> 
+                        <span>Save</span>
+                    </DropdownItem>
+                    <DropdownItem href="#"className="flex" onClick={exportCanvas}>
+                        <DownloadIcon className="mr-2 h-4 w-4" />
+                        <span>Export</span>
+                    </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+            <Dropdown visible={resizeMenuOpen} onShow={() => setResizeMenuOpen(!resizeMenuOpen)}>
+                <DropdownToggle>
+                    Resize
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem href="#" onSelect={() => handleResize(8.5, 11)}>
+                        <span>Letter (8.5 x 11)</span>
+                    </DropdownItem>
+                    <DropdownItem href="#" onSelect={() => handleResize(11, 17)}>
+                        <span>Tabloid (11 x 17)</span>
+                    </DropdownItem>
+                    <DropdownItem href="#" onSelect={() => handleResize(18, 24)}>
+                        <span>Poster (18 x 24)</span>
+                    </DropdownItem>
+                    <DropdownDivider/>
+                        <DropdownItem href="#">
                             <label htmlFor="custom-width">Width (inches)</label>
                             <input
-                            id="custom-width"
-                            type="number"
-                            min="1"
-                            step="0.1"
-                            onChange={(e) => handleResize(parseFloat(e.target.value), canvasSize.height / dpi)}
+                              id="custom-width"
+                              type="number"
+                              min="1"
+                              step="0.1"
+                              onChange={(e) => handleResize(parseFloat(e.target.value), canvasSize.height / dpi)}
                             />
+                        </DropdownItem>
+                        <DropdownItem href="#">
                             <label htmlFor="custom-height">Height (inches)</label>
                             <input
                             id="custom-height"
@@ -326,37 +333,38 @@ const GangsheetBuilderPOC = () => {
                             step="0.1"
                             onChange={(e) => handleResize(canvasSize.width / dpi, parseFloat(e.target.value))}
                             />
+                        </DropdownItem>
+                        <DropdownItem href="#">
                             <label htmlFor="dpi">DPI</label>
                             <input
-                            id="dpi"
-                            type="number"
-                            min="72"
-                            max="600"
-                            value={dpi}
-                            onChange={(e) => setDpi(parseInt(e.target.value))}
+                              id="dpi"
+                              type="number"
+                              min="72"
+                              max="600"
+                              value={dpi}
+                              onChange={(e) => setDpi(parseInt(e.target.value))}
                             />
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
         </div>
         <div className="hidden md:flex items-center space-x-4">
-          <button variant="ghost" size="icon" onClick={undo}>
+          <button size="icon" onClick={undo}>
             <UndoIcon className="h-5 w-5" />
           </button>
-          <button variant="ghost" size="icon" onClick={redo}>
+          <button size="icon" onClick={redo}>
             <RedoIcon className="h-5 w-5" />
           </button>
-          <button variant="ghost" size="icon">
+          <button size="icon">
             <RefreshCwIcon className="h-5 w-5" />
           </button>
           <div className="bg-green-500 rounded-full w-8 h-8 flex items-center justify-center">
             F
           </div>
-          <button variant="ghost" size="icon">
+          <button size="icon">
             <PlusIcon className="h-5 w-5" />
           </button>
-          <button variant="ghost" size="icon">
+          <button size="icon">
             <ShareIcon className="h-5 w-5" />
           </button>
         </div>
@@ -423,7 +431,7 @@ const GangsheetBuilderPOC = () => {
           )}
         </aside>
         <main className="flex-1 p-4 bg-gray-100 overflow-hidden">
-          <div className="relative w-full h-full" ref={containerRef} {...bind()}>
+          <div className="relative w-full h-full" ref={containerRef} {...bind}>
             <div className="absolute left-8 top-0 right-0 h-8 bg-white">
               {renderRuler('horizontal')}
             </div>

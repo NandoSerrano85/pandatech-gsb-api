@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -25,10 +25,11 @@ const Sidebar = () => {
         {id:1, path: '/', name:"Dashboard", icon:LuBox},
         {id:2, path: '/users', name:"Users", icon:TbUsers},
         {id:3, path: '/open-orders', name:"Open Orders", icon:FaSuitcase},
-        {id:4, path: '/upload-images', name:"Upload Images", icon:FaFileUpload},
-        {id:5, path: '/gangsheets', name:"Gangsheets", icon:FaTable},
-        {id:6, path: '/missing-images', name:"Missing Items", icon:MdTableView},
-        {id:7, path: '/gangsheet-builder-poc', name:"Gangsheet Builder POC", icon:MdOutlineNewspaper},
+        {id:4, path: '/products', name:"Products", icon:MdTableView},
+        {id:5, path: '/upload-images', name:"Upload Images", icon:FaFileUpload},
+        {id:6, path: '/gangsheets', name:"Gangsheets", icon:FaTable},
+        {id:7, path: '/missing-images', name:"Missing Items", icon:MdTableView},
+        {id:8, path: '/gangsheet-builder-poc', name:"Gangsheet Builder POC", icon:MdOutlineNewspaper},
     ];
 
     const handleLinkClick = (index) => {

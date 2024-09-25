@@ -6,3 +6,4 @@ export {default as MissingImages} from './MissingImages';
 export {default as UploadImages} from './UploadImages';
 export {default as Profile} from './Profile';
 export {default as GangsheetBuilderPOC} from './GangsheetBuilderPOC';
+export {default as Products} from './Products';

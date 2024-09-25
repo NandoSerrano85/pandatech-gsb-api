@@ -135,7 +135,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
      # Calculate scale factor
     scale_factor = target_largest_side_inches / current_largest_side_inches
     
-    if image_type == 'DTF' or image_type == 'UVDTF Decal' or image_type == 'UVDTF Lid':
+    if image_type == 'DTF' or image_type == 'UVDTF Decal' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2':
         # Calculate new dimensions
         new_width_inches = (current_width_inches * scale_factor)
         new_height_inches = (current_height_inches * scale_factor)
@@ -157,9 +157,6 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
 
         new_width_px = int(current_width * scale_factor)
         new_height_px = int(current_height * scale_factor)
-    elif image_type == 'UVDTF 40oz':
-        new_width_px = inches_to_pixels(SIZING[image_type][image_size]['width'], target_dpi)
-        new_height_px = inches_to_pixels(SIZING[image_type][image_size]['height'], target_dpi)
     else:
         # Calculate new size in pixels based on target inches and DPI
         new_width_px = inches_to_pixels(SIZING[image_type]['width'], target_dpi)
@@ -171,7 +168,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     resized_img = cv2.resize(img, (new_width_px, new_height_px), interpolation=interpolation)
 
     # Fit the resized images into a canvas
-    if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid':
+    if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2':
         return fit_image_to_center_canvas(resized_img, new_width_px, new_height_px, target_dpi, image_type)
     elif image_type == 'MK':
         if (new_width_px > new_height_px) and is_new_mk:
@@ -182,8 +179,8 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     
     # Check in utils for code on arching still can't get to work properly
     # Arch bottom part of a 40oz cup wrap
-    if image_type == "UVDTF 40oz Bottom":
-        # pass
-        resized_img = arch_image(resized_img, image_type, image_size, target_dpi)
+    # if image_type == "UVDTF 40oz Bottom":
+    #     # pass
+    #     resized_img = arch_image(resized_img, image_type, image_size, target_dpi)
         
     return resized_img
