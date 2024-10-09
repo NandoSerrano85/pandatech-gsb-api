@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package product;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Product {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string vendor = 4;
+  string product_type = 5;
+  repeated string tags = 6;
+  
+  enum Status {
+    DRAFT = 0;
+    ACTIVE = 1;
+    ARCHIVED = 2;
+  }
+  Status status = 7;
+  
+  message Variant {
+    string id = 1;
+    string title = 2;
+    string sku = 3;
+    double price = 4;
+    int32 inventory_quantity = 5;
+    repeated string option_values = 6;
+  }
+  repeated Variant variants = 8;
+  
+  message Image {
+    string id = 1;
+    string src = 2;
+    int32 position = 3;
+    repeated string variant_ids = 4;
+  }
+  repeated Image images = 9;
+  
+  repeated string options = 10;
+  
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  
+  bool published = 13;
+  google.protobuf.Timestamp published_at = 14;
+
+  int32 total_inventory_quantity = 15;
+  string general_sku = 16;
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message GetProductsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string vendor = 3;
+  string product_type = 4;
+  repeated string tags = 5;
+  Product.Status status = 6;
+}
+
+message GetProductsResponse {
+  repeated Product products = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message CreateProductRequest {
+  Product product = 1;
+}
+
+message UpdateProductRequest {
+  string id = 1;
+  Product product = 2;
+}
+
+service ProductService {
+  rpc GetProduct(GetProductRequest) returns (Product) {}
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse) {}
+  rpc CreateProduct(CreateProductRequest) returns (Product) {}
+  rpc UpdateProduct(UpdateProductRequest) returns (Product) {}
+  rpc DeleteProduct(GetProductRequest) returns (google.protobuf.Empty) {}
+}

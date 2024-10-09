@@ -3,7 +3,7 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
-import { Layout } from './components';
+import { Layout } from '@/components';
 import {
   Home,
   OpenOrders,
@@ -14,7 +14,7 @@ import {
   Profile,
   GangsheetBuilderPOC,
   Products,
- } from './pages';
+ } from '@/pages';
 const App = () => {
   return (
     <Router>

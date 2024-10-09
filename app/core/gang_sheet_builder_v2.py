@@ -55,23 +55,10 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
     width_px = cached_inches_to_pixels(GANG_SHEET_MAX_WIDTH[gang_sheet_type], dpi)
     height_px = cached_inches_to_pixels(GANG_SHEET_MAX_HEIGHT[gang_sheet_type], dpi)
 
-    if gang_sheet_type == 'UVDTF' or gang_sheet_type == 'Custom 2x2':
-        total_rows = ceil(total_images / GANG_SHEET_MAX_ROW[gang_sheet_type][image_type])
-        row_height = GANG_SHEET_MAX_ROW_HEIGHT[gang_sheet_type][image_type]
-        spacing_height = GANG_SHEET_SPACING[gang_sheet_type][image_type]['height']
-    else:
-        average_row = statistics.median([GANG_SHEET_MAX_ROW[gang_sheet_type][size] for size in image_data['Size']])
-        row_height = statistics.median([GANG_SHEET_MAX_ROW_HEIGHT[gang_sheet_type][size] for size in image_data['Size']])
-        total_rows = ceil(total_images / (average_row - 0.5))
-        spacing_height = GANG_SHEET_SPACING[gang_sheet_type]['Adult+']['height']
-
-    total_height = (row_height + spacing_height) * total_rows + spacing_height
-    total_height_px = cached_inches_to_pixels(total_height, dpi)
-    num_sheets = ceil(total_height_px / height_px)
-
-    image_index, part = 0, 1
+    image_index, part, current_index = 0, 1, 0
     images_not_found = {}
     has_missing = False
+    current_image_amount_left = 0
 
     # Pre-process images in parallel
     with ThreadPoolExecutor() as executor:
@@ -79,16 +66,18 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                            for i in range(len(image_data['Title']))}
         processed_images = {i: future.result() for future, i in future_to_image.items()}
 
-    for sheet in range(num_sheets):
+    while current_index != len(image_data['Title'])-1:
         gang_sheet = np.zeros((height_px, width_px, 4), dtype=np.uint8)
         gang_sheet[:, :, 3] = 0 
         current_x, current_y = 0, 0
         row_height = 0
-        gang_sheet, current_y = add_text_to_gang_sheet(gang_sheet, f"{order_range} {image_type} {text}- part{sheet+1}", width_px, height_px, dpi)
+        gang_sheet, current_y = add_text_to_gang_sheet(gang_sheet, f"{order_range} {image_type} {text}- part{part}", width_px, height_px, dpi)
 
         for i in range(image_index, len(image_data['Title'])):
             img = processed_images[i]
-            
+            current_index = i
+            if image_index != i:
+                current_image_amount_left = 0
             if img is not None:
                 image_size = image_data['Size'][i]
                 spacing_key = image_size if image_type == 'DTF' else image_type
@@ -96,13 +85,14 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                 spacing_height_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['height'], dpi)
 
                 img_height, img_width = img.shape[:2]
-                for _ in range(image_data['Total'][i]):
+                for amount_index in range(current_image_amount_left, image_data['Total'][i]):
                     if current_x + img_width > width_px:
                         current_x, current_y = 0, current_y + row_height + spacing_width_px
                         row_height = 0
                     
                     if current_y + img_height + spacing_height_px > height_px:
                         image_index = i
+                        current_image_amount_left = amount_index
                         break
                     
                     gang_sheet[current_y:current_y+img_height, current_x:current_x+img_width] = img
@@ -116,7 +106,7 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                 image_name = os.path.splitext(os.path.basename(image_data['Title'][i]))[0]
                 images_not_found[image_name] = {'Total': image_data['Total'][i], 'Size': image_data['Size'][i]}
                 image_index = i + 1
-
+                current_image_amount_left = 0
         # Save the gang sheet
         alpha_channel = gang_sheet[:,:,3]
         rows, cols = np.any(alpha_channel, axis=1), np.any(alpha_channel, axis=0)
@@ -132,7 +122,9 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
             save_single_image(resized_gang_sheet, output_path, f"{order_range} {image_type} {text} part {part}.png")
             part += 1
         else:
-            print(f"Warning: Sheet {sheet + 1} is empty (all transparent). Skipping.")
+            print(f"Warning: Sheet {part} is empty (all transparent). Skipping.")
+       
+        
 
     if has_missing:
         with open(f"{output_path}/{image_type}_missing.csv", 'w', newline='') as csvfile:

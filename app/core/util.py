@@ -130,7 +130,7 @@ def sort_csv_data_by_type_optimized(csv_data, path, type):
         data[type] = {'Title':[], 'Size':[], 'Total':[]}
 
     for n in index_data:
-        title_total = int(csv_data['Total'][n])
+        title_total = int(csv_data['Total'][n]) if type != 'UVDTF Milk Carton' else int(csv_data['Total'][n]) * 4
         if local_type == "UVDTF 40oz":
             title_top = "{}/Top/{}.png".format(local_path, csv_data['Product title'][n])
             title_bottom = "{}/Bottom/{} (Bottom).png".format(local_path, csv_data['Product title'][n])

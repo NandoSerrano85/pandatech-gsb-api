@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter
 import shopify
 from dotenv import load_dotenv
 from app.core.util import (

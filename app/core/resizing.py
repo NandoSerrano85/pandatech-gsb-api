@@ -121,11 +121,8 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
             target_largest_side_inches = SIZING[image_type][image_size]['height']
         else:
             raise Exception("Missing Size Value. Please add an image_size value of 'Adult+', 'Adult', 'Youth', 'Toddler' or 'Pocket'.")
-    elif image_type == 'UVDTF 40oz':
-        if image_size in SIZING[image_type]:
-            target_largest_side_inches = SIZING[image_type][image_size]['height']
-        else:
-            raise Exception("Missing Size Value. Please add an image_size value of 'Top' or 'Bottom'.")
+    elif image_type == 'UVDTF 40oz Top' or image_type == 'UVDTF 40oz Bottom':
+        target_largest_side_inches = SIZING[image_type]['width']
     else:
         if SIZING[image_type]['width'] >= SIZING[image_type]['height']:
             target_largest_side_inches = SIZING[image_type]['width']
@@ -143,7 +140,9 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
          # Calculate new size in pixels based on new dementions inches and DPI
         new_width_px = inches_to_pixels(new_width_inches, target_dpi)
         new_height_px = inches_to_pixels(new_height_inches, target_dpi)
-    elif image_type == 'MK' or image_type == 'UVDTF Bookmark':
+    elif image_type == 'MK' or image_type == 'UVDTF Bookmark' or image_type == 'MK Tapered':
+        if current_width_inches < 1:
+            image_type = 'MK Rectangle'
         current_width = inches_to_pixels(current_width_inches, target_dpi)
         current_height = inches_to_pixels(current_height_inches, target_dpi)
 
@@ -170,7 +169,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     # Fit the resized images into a canvas
     if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2':
         return fit_image_to_center_canvas(resized_img, new_width_px, new_height_px, target_dpi, image_type)
-    elif image_type == 'MK':
+    elif image_type == 'MK' or image_type == 'MK Tapered' or image_type == 'MK Rectangle':
         if (new_width_px > new_height_px) and is_new_mk:
             rotated_img = rotate_image_90(resized_img)
             return fit_image_to_center_canvas(rotated_img, rotated_img.shape[1], rotated_img.shape[0], target_dpi, image_type)

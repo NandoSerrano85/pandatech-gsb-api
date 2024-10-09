@@ -18,6 +18,8 @@ UVDTF_40OZ_TOP_DIR_CLEANUP = '{}UVDTF 40oz/Top Cleanup/'.format(ROOT_FOLDER)
 UVDTF_40OZ_TOP_DIR = '{}UVDTF 40oz/Top/'.format(ROOT_FOLDER)
 UVDTF_40OZ_BOTTOM_DIR_CLEANUP = '{}UVDTF 40oz/Bottom Cleanup/'.format(ROOT_FOLDER)
 UVDTF_40OZ_BOTTOM_DIR = '{}UVDTF 40oz/Bottom/'.format(ROOT_FOLDER)
+UVDTF_MILK_CARTON_DIR_CLEANUP = '{}UVDTF Milk Carton Cleanup/'.format(ROOT_FOLDER)
+UVDTF_MILK_CARTON_DIR = '{}UVDTF Milk Carton/'.format(ROOT_FOLDER)
 
 DIR_LIST = {
     'DTF':{
@@ -52,13 +54,17 @@ DIR_LIST = {
         'source': UVDTF_LID_DIR_CLEANUP,
         'destination': UVDTF_LID_DIR,
     },
+    'UVDTF Milk Carton' : {
+        'source': UVDTF_MILK_CARTON_DIR_CLEANUP,
+        'destination': UVDTF_MILK_CARTON_DIR,
+    }
 }
 MK_DPI = 950
 STD_DPI = 400
 TEXT_AREA_HEIGHT = 0.015
 SHEET_HEIGHT = 120
 
-All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid']
+All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid', 'UVDTF Milk Carton']
 
 All_TYPES_DICT = {
     'DTF Transfer': 'DTF',
@@ -69,6 +75,7 @@ All_TYPES_DICT = {
     '40oz UVDTF Tumbler Wrap': 'UVDTF 40oz',
     'UVDTF Bookmark Decal': 'UVDTF Bookmark',
     'UVDTF Lid Decal': 'UVDTF Lid',
+    'UVDTF Milk Carton': 'UVDTF Milk Carton',
 }
 
 PACK_LISTS = {
@@ -113,21 +120,27 @@ SIZING = {
     'UVDTF 16oz': { 'width': 9.4, 'height': 4.33 },
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
     'MK': { 'width': 1.3, 'height': 1.75 },
+    'MK Rectangle': {'width': 0.9, 'height': 2},
+    'MK Tapered': {'width': 1.65, 'height': 2.4},
     'UVDTF Bookmark': { 'width': 5.5, 'height': 1.8 },
     'UVDTF 40oz Top': {'width': 11.3, 'height': 5 },
     'UVDTF 40oz Bottom': {'width': 10.3, 'height': 3.58 },
     # 'UVDTF 40oz Bottom': {'width': 10, 'height': 3.2 },
     'UVDTF Bookmark': {'width': 5.5, 'height': 1.8 },
     'UVDTF Lid': {'width': 2.75, 'height': 2.75 },
+    'UVDTF Milk Carton': {'width': 2.2, 'height': 6.1 },
     'Custom 2x2': {'width': 2, 'height': 2 },
 }
 
 CANVAS = {
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
     'MK': { 'width': 1.5, 'height': 2.3 },
+    'MK Rectangle': {'width': 1.5, 'height': 2.3},
+    'MK Tapered': { 'width': 1.75, 'height': 2.6 },
     'UVDTF 40oz Bottom': {'width': 10.3, 'height': 3.58, 'arch': 3},
     'UVDTF Lid': {'width': 2.75, 'height': 2.75 },
     'UVDTF Bookmark': {'width': 5.5, 'height': 1.8 },
+    'UVDTF Milk Carton': {'width': 2.2, 'height': 6.1 },
     'Custom 2x2': {'width': 2, 'height': 2 },
 }
 
@@ -162,6 +175,7 @@ UVDTF_GANG_SHEET_SPACING_40OZ_BOTTOM  = {'width': 0.4, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_BOOKMARK = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_LID = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_CUSTOM_2X2 = {'width': 0.3, 'height': 0.3}
+UVDTF_GANG_SHEET_SPACING_MILK_CARTON = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_SPACING_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_SPACING_DECAL,
@@ -171,6 +185,7 @@ UVDTF_GANG_SHEET_SPACING = {
     'UVDTF Bookmark': UVDTF_GANG_SHEET_SPACING_BOOKMARK,
     'UVDTF Lid': UVDTF_GANG_SHEET_SPACING_LID,
     'Custom 2x2': UVDTF_GANG_SHEET_SPACING_CUSTOM_2X2,
+    'UVDTF Milk Carton': UVDTF_GANG_SHEET_SPACING_MILK_CARTON,
 }
 UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ = 9.4
 UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL = 4.0
@@ -180,6 +195,7 @@ UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_BOTTOM = 3.58
 UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK = 5.5
 UVDTF_GANG_SHEET_MAX_HEIGHT_LID = 2.75
 UVDTF_GANG_SHEET_MAX_HEIGHT_CUSTOM_2X2 = 2
+UVDTF_GANG_SHEET_MAX_HEIGHT_MILK_CARTON = 6.1
 UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL,
@@ -189,6 +205,7 @@ UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF Bookmark': UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK,
     'UVDTF Lid': UVDTF_GANG_SHEET_MAX_HEIGHT_LID,
     'Custom 2x2': UVDTF_GANG_SHEET_MAX_HEIGHT_CUSTOM_2X2,
+    'UVDTF Milk Carton': UVDTF_GANG_SHEET_MAX_HEIGHT_MILK_CARTON,
 }
 
 DTF_GANG_SHEET_MAX_WIDTH = 22

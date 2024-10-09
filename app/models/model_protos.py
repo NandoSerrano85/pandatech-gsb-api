@@ -5,6 +5,16 @@ from google.protobuf.descriptor import FieldDescriptor
 
 from protos.generated.user_pb2 import (User, RegisterRequest, RegisterResponse, AuthResponse)
 from protos.generated.images_pb2 import (Image, MissingImage)
+from protos.generated.order_pb2 import (Order, GetOrdersResponse, GetOrdersRequest) 
+from protos.generated.product_pb2 import (
+    Product, 
+    GetProductRequest, 
+    GetProductsRequest, 
+    GetProductsRequest,
+    GetProductsResponse,
+    CreateProductRequest,
+    UpdateProductRequest,
+)
 
 # Protobuf to SQLAlchemy type mapping
 TYPE_MAP = {
@@ -74,3 +84,38 @@ def MissingImageModel():
     proto_class = get_protobuf_messages(MissingImage)
     return generate_sqlalchemy_model(proto_class)
 
+def OrderModel():
+    proto_class = get_protobuf_messages(Order)
+    return generate_sqlalchemy_model(proto_class)
+
+def GetOrdersResponseModel():
+    proto_class = get_protobuf_messages(GetOrdersResponse)
+    return generate_sqlalchemy_model(proto_class)
+
+def GetOrdersRequestModel():
+    proto_class = get_protobuf_messages(GetOrdersRequest)
+    return generate_sqlalchemy_model(proto_class)
+
+def ProductModel():
+    proto_class = get_protobuf_messages(Product)
+    return generate_sqlalchemy_model(proto_class)
+
+def GetProductRequestModel():
+    proto_class = get_protobuf_messages(GetProductRequest)
+    return generate_sqlalchemy_model(proto_class)
+
+def GetProductsRequestModel():
+    proto_class = get_protobuf_messages(GetProductsRequest)
+    return generate_sqlalchemy_model(proto_class)
+
+def GetProductsResponseModel():
+    proto_class = get_protobuf_messages(GetProductsResponse)
+    return generate_sqlalchemy_model(proto_class)
+
+def CreateProductRequestModel():
+    proto_class = get_protobuf_messages(CreateProductRequest)
+    return generate_sqlalchemy_model(proto_class)
+
+def UpdateProductRequestModel():
+    proto_class = get_protobuf_messages(UpdateProductRequest)
+    return generate_sqlalchemy_model(proto_class)

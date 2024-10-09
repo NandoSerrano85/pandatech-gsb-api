@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package order;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+enum FulfillmentStatus {
+    UNFULFILLED = 0;
+    PARTIALLY_FULFILLED = 1;
+    FULFILLED = 2;
+}
+
+message Order {
+  string id = 1;
+  string email = 2;
+  string phone = 3;
+  
+  enum FinancialStatus {
+    PENDING = 0;
+    AUTHORIZED = 1;
+    PAID = 2;
+    PARTIALLY_PAID = 3;
+    REFUNDED = 4;
+    VOIDED = 5;
+  }
+  FinancialStatus financial_status = 4;
+  
+  FulfillmentStatus fulfillment_status = 5;
+  
+  double total_price = 6;
+  string currency = 7;
+  
+  message LineItem {
+    string id = 1;
+    string product_id = 2;
+    string variant_id = 3;
+    string title = 4;
+    int32 quantity = 5;
+    double price = 6;
+    double total_discount = 7;
+  }
+  repeated LineItem line_items = 8;
+  
+  message ShippingAddress {
+    string first_name = 1;
+    string last_name = 2;
+    string address1 = 3;
+    string address2 = 4;
+    string city = 5;
+    string province = 6;
+    string country = 7;
+    string zip = 8;
+  }
+  ShippingAddress shipping_address = 9;
+  
+  message BillingAddress {
+    string first_name = 1;
+    string last_name = 2;
+    string address1 = 3;
+    string address2 = 4;
+    string city = 5;
+    string province = 6;
+    string country = 7;
+    string zip = 8;
+  }
+  BillingAddress billing_address = 10;
+  
+  message ShippingLine {
+    string title = 1;
+    double price = 2;
+  }
+  repeated ShippingLine shipping_lines = 11;
+  
+  message Transaction {
+    string id = 1;
+    string kind = 2;
+    string status = 3;
+    double amount = 4;
+  }
+  repeated Transaction transactions = 12;
+  
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  
+  string customer_id = 15;
+  string order_number = 16;
+  string note = 17;
+  repeated string tags = 18;
+}
+
+message GetOrdersRequest {
+  FulfillmentStatus fulfillment_status = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message GetOrdersResponse {
+  repeated Order orders = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+service OrderService {
+  rpc GetUnfulfilledOrders(google.protobuf.Empty) returns (GetOrdersResponse) {}
+  rpc GetPartiallyFulfilledOrders(google.protobuf.Empty) returns (GetOrdersResponse) {}
+  rpc GetFulfilledOrders(google.protobuf.Empty) returns (GetOrdersResponse) {}
+  rpc GetOrdersByFulfillmentStatus(GetOrdersRequest) returns (GetOrdersResponse) {}
+}

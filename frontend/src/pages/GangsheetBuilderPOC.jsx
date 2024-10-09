@@ -1,31 +1,27 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  CDropdown as Dropdown,
-  CDropdownToggle as DropdownToggle,
-  CDropdownMenu as DropdownMenu,
-  CDropdownItem as DropdownItem,
-  CDropdownDivider as DropdownDivider,
-} from '@coreui/react';
 import { 
-  MenuIcon,
-  RefreshCwIcon,
-  UndoIcon,
-  RedoIcon,
-  PlusIcon,
-  ShareIcon,
-  FlipHorizontalIcon,
-  FlipVerticalIcon,
-  SaveIcon,
-  DownloadIcon 
-} from "lucide-react";
+  MdUndo,
+  MdRedo,
+  MdSaveAlt,
+  MdOutlineMenu,
+ } from "react-icons/md";
+ import { TbFileExport } from "react-icons/tb";
+ import { CiCirclePlus } from "react-icons/ci";
+ import { IoMdRefresh } from "react-icons/io";
+ import { FaRegShareSquare } from "react-icons/fa";
+ import { 
+  CgEditFlipH,
+  CgEditFlipV,
+  } from "react-icons/cg";
 import { useGesture } from '@use-gesture/react';
+import { Dropdown } from '@/components/ui';
 
 const GangsheetBuilderPOC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [fileMenuOpen, setFileMenuOpen] = useState(false);
   const [resizeMenuOpen, setResizeMenuOpen] = useState(false);
   const [images, setImages] = useState([])
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 })
+  const [canvasSize, setCanvasSize] = useState({ width: 6600, height: 7200 })
   const [dpi, setDpi] = useState(300)
   const [canvasImages, setCanvasImages] = useState([])
   const [selectedImage, setSelectedImage] = useState(null)
@@ -33,10 +29,33 @@ const GangsheetBuilderPOC = () => {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
+  const [mobileMenu, setMobileMenu] = useState([]);
+  const [fileMenu, setFileMenu] = useState([]);
+  const [resizeMenu, setResizeMenu] = useState([]);
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const fileinputRef = useRef(null)
 
+  useEffect(() => {
+    setMobileMenu([
+      {itemName: 'Undo', link: "#", lineBefore: false, onclick:undo() , itemIcon: <MdUndo />,},
+      {itemName: 'Redo', link: "#", lineBefore: false, onclick:redo() , itemIcon: <MdRedo />,},
+      {itemName: 'Save', link: "#", lineBefore: false, onclick:saveCanvas() , itemIcon: <MdSaveAlt />,},
+      {itemName: 'Export', link: "#", lineBefore: false, onclick:exportCanvas() , itemIcon: <TbFileExport />,},
+    ]);
+    setFileMenu([
+      {itemName: 'Save', link: "#", lineBefore: false, onclick:saveCanvas() , itemIcon: <MdSaveAlt />,},
+      {itemName: 'Export', link: "#", lineBefore: false, onclick:exportCanvas() , itemIcon: <TbFileExport />,},
+    ]);
+    setResizeMenu([
+      {itemName: 'Small (22 x 12)', link: "#", lineBefore: false, onclick:handleResize(22, 12)},
+      {itemName: 'Medium (22 x 48)', link: "#", lineBefore: false, onclick:handleResize(22, 48)},
+      {itemName: 'Large (22 x 120)', link: "#", lineBefore: false, onclick:handleResize(22, 120)},
+      {itemName: 'Width (inches)', link: "#", lineBefore: true, isInput: true, itemInput:{ min: 12, max: 22, id:"custom-width", type:"number", onChange:(e) => handleResize(parseFloat(e.target.value), canvasSize.height / dpi)}},
+      {itemName: 'Height (inches)', link: "#", lineBefore: false, isInput: true, itemInput:{ min: 12, max: 120, id:"custom-height", type:"number", onChange:(e) => handleResize(canvasSize.width / dpi, parseFloat(e.target.value))}},
+      {itemName: 'DPI', link: "#", lineBefore: false, isInput: true, itemInput:{ min: 300, max: 600, id:"dpi", type:"number", onChange:(e) => setDpi(parseInt(e.target.value))}},
+    ]);
+  },[]);
   useEffect(() => {
     drawCanvas()
     // fitCanvasToContainer()
@@ -100,6 +119,7 @@ const GangsheetBuilderPOC = () => {
   }
 
   const handleFileChange = (event) => {
+    event.preventDefault();
     const files = event.target.files
     if (files) {
       const newImages = Array.from(files)
@@ -260,112 +280,31 @@ const GangsheetBuilderPOC = () => {
     <div className="flex flex-col h-screen bg-gradient-to-r from-blue-400 to-purple-500">
       <header className="flex items-center justify-between p-4 bg-white/10 text-white">
         <div className="flex items-center space-x-4">
-            <Dropdown className="md:hidden" visible={mobileMenuOpen} onShow={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                <DropdownToggle>
-                        <MenuIcon className="h-6 w-6" />
-                </DropdownToggle>
-                <DropdownMenu>
-                    <DropdownItem href="#" onClick={undo}>
-                        <UndoIcon className="mr-2 h-4 w-4" />
-                        <span>Undo</span>
-                    </DropdownItem>
-                    <DropdownItem href="#" onClick={redo}>
-                        <RedoIcon className="mr-2 h-4 w-4" />
-                        <span>Redo</span>
-                    </DropdownItem>
-                    <DropdownDivider/>
-                    <DropdownItem href="#" onClick={saveCanvas}>
-                        <SaveIcon className="mr-2 h-4 w-4" />
-                        <span>Save</span>
-                    </DropdownItem>
-                    <DropdownItem href="#" onClick={exportCanvas}>
-                        <DownloadIcon className="mr-2 h-4 w-4" />
-                        <span>Export</span>
-                    </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-            <Dropdown visible={fileMenuOpen} onShow={() => setFileMenuOpen(!fileMenuOpen)}>
-                <DropdownToggle>
-                  File
-                </DropdownToggle>
-                <DropdownMenu>
-                    <DropdownItem href="#" className="flex" onClick={saveCanvas}>
-                        <SaveIcon className="mr-2 h-4 w-4" /> 
-                        <span>Save</span>
-                    </DropdownItem>
-                    <DropdownItem href="#"className="flex" onClick={exportCanvas}>
-                        <DownloadIcon className="mr-2 h-4 w-4" />
-                        <span>Export</span>
-                    </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-            <Dropdown visible={resizeMenuOpen} onShow={() => setResizeMenuOpen(!resizeMenuOpen)}>
-                <DropdownToggle>
-                    Resize
-                </DropdownToggle>
-                <DropdownMenu>
-                    <DropdownItem href="#" onSelect={() => handleResize(8.5, 11)}>
-                        <span>Letter (8.5 x 11)</span>
-                    </DropdownItem>
-                    <DropdownItem href="#" onSelect={() => handleResize(11, 17)}>
-                        <span>Tabloid (11 x 17)</span>
-                    </DropdownItem>
-                    <DropdownItem href="#" onSelect={() => handleResize(18, 24)}>
-                        <span>Poster (18 x 24)</span>
-                    </DropdownItem>
-                    <DropdownDivider/>
-                        <DropdownItem href="#">
-                            <label htmlFor="custom-width">Width (inches)</label>
-                            <input
-                              id="custom-width"
-                              type="number"
-                              min="1"
-                              step="0.1"
-                              onChange={(e) => handleResize(parseFloat(e.target.value), canvasSize.height / dpi)}
-                            />
-                        </DropdownItem>
-                        <DropdownItem href="#">
-                            <label htmlFor="custom-height">Height (inches)</label>
-                            <input
-                            id="custom-height"
-                            type="number"
-                            min="1"
-                            step="0.1"
-                            onChange={(e) => handleResize(canvasSize.width / dpi, parseFloat(e.target.value))}
-                            />
-                        </DropdownItem>
-                        <DropdownItem href="#">
-                            <label htmlFor="dpi">DPI</label>
-                            <input
-                              id="dpi"
-                              type="number"
-                              min="72"
-                              max="600"
-                              value={dpi}
-                              onChange={(e) => setDpi(parseInt(e.target.value))}
-                            />
-                        </DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
+            <Dropdown classname="md:hidden" visible={mobileMenuOpen} onshow={() => setMobileMenuOpen(!mobileMenuOpen)} icon={<MdOutlineMenu />} dropdownItems={mobileMenu} />
+                
+            <Dropdown dropdownName="File" visible={fileMenuOpen} onshow={() => setFileMenuOpen(!fileMenuOpen)} dropdownItems={fileMenu} />
+              
+            <Dropdown dropdownName="Resize" visible={resizeMenuOpen} onshow={() => setResizeMenuOpen(!resizeMenuOpen)} dropdownItems={resizeMenu} />
+                
         </div>
         <div className="hidden md:flex items-center space-x-4">
           <button size="icon" onClick={undo}>
-            <UndoIcon className="h-5 w-5" />
+            <MdUndo className="h-5 w-5" />
           </button>
           <button size="icon" onClick={redo}>
-            <RedoIcon className="h-5 w-5" />
+            <MdRedo className="h-5 w-5" />
           </button>
           <button size="icon">
-            <RefreshCwIcon className="h-5 w-5" />
+            <IoMdRefresh className="h-5 w-5" />
           </button>
           <div className="bg-green-500 rounded-full w-8 h-8 flex items-center justify-center">
             F
           </div>
           <button size="icon">
-            <PlusIcon className="h-5 w-5" />
+            <CiCirclePlus className="h-5 w-5" />
           </button>
           <button size="icon">
-            <ShareIcon className="h-5 w-5" />
+            <FaRegShareSquare className="h-5 w-5" />
           </button>
         </div>
       </header>
@@ -418,10 +357,10 @@ const GangsheetBuilderPOC = () => {
               </div>
               <div className="flex space-x-2">
                 <button onClick={() => updateSelectedImage({ flipX: !selectedImage.flipX })}>
-                  <FlipHorizontalIcon className="h-4 w-4" />
+                  <CgEditFlipH className="h-4 w-4" />
                 </button>
                 <button onClick={() => updateSelectedImage({ flipY: !selectedImage.flipY })}>
-                  <FlipVerticalIcon className="h-4 w-4" />
+                  <CgEditFlipV className="h-4 w-4" />
                 </button>
               </div>
               <button onClick={duplicateSelectedImage} className="w-full">

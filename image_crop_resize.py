@@ -18,23 +18,25 @@ from app.core.constants import (
 def main():
     allTypes = All_TYPES
     is_new_mk = False
-    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", "UVDTF Lid", 'MK']
-    allTypes = ["UVDTF 16oz"]
+    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", 'UVDTF Bookmark', "MK"]
+    allTypes = ["UVDTF Decal"]
 
     for t in allTypes:
         # dirName = "ParisBerry"
         # dirName = "{}".format(t)
         if t == 'UVDTF 40oz Bottom':
-            dirName = "UVDTF 40oz/Bottom"
+            dirName = "UVDTF 40oz/Bottom Cleanup"
         elif t == 'UVDTF 40oz Top':
             dirName = "UVDTF 40oz/Top Cleanup"
         else:
             dirName = "{} Cleanup".format(t)
-        dirName = "Custom Cup Wraps"
-        target_dpi = STD_DPI if t != 'MK' else MK_DPI
+        # dirName = "Custom Cup Wraps"
+        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered') else STD_DPI
+        print(target_dpi)
+        print(t != 'MK' or t != 'MK Tapered')
         folderImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, dirName)
         destinationImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, t)
-        destinationImagePath = folderImagePath
+        # destinationImagePath = folderImagePath
         created_dir = False
         imageSize = None
         images = []
@@ -60,9 +62,9 @@ def main():
         
         print_progress_bar(0, len(pngFilePath), prefix = 'Resizing:', suffix = 'Complete', length = 50)
         for n in range(0, len(pngFilePath)):
-            if t == 'UVDTF 40oz Bottom' and re.search(r'/(Bottom Cleanup)/', pngFilePath[n]):
+            if t == 'UVDTF 40oz Bottom':
                 imageSize = 'Bottom'
-            elif t == 'UVDTF 40oz Top' and re.search(r'/(Top Cleanup)/', pngFilePath[n]):
+            elif t == 'UVDTF 40oz Top':
                 imageSize = 'Top'
             
             if len(images) > 0:
