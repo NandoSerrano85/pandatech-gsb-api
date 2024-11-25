@@ -1,12 +1,32 @@
 # gRPC Dockerfile
-FROM python:3.10
+FROM python:3.10-slim-buster as builder
 
-ENV PYTHONPATH /app
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
+
+# Install Python dependencies
 COPY requirements.txt .
-RUN /usr/local/bin/python -m pip install --upgrade setuptools===58.0.0
-RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --user -r requirements.txt
 
+# Final stage
+FROM python:3.10-slim-buster
+
+WORKDIR /app
+
+# Copy Python dependencies from builder stage
+COPY --from=builder /root/.local /root/.local
+
+# Make sure scripts in .local are usable:
+ENV PATH=/root/.local/bin:$PATH
+
+# Set Python path
+ENV PYTHONPATH /app
+
+# Copy application code
 COPY . .
 
+# Run the application
 CMD ["python", "grpc_server.py"]

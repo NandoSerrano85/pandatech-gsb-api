@@ -1,16 +1,31 @@
 # FastAPI Dockerfile
+FROM python:3.10 as builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install --user -r requirements.txt
+
+# Final stage
 FROM python:3.10
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN /usr/local/bin/python -m pip install --upgrade setuptools===58.0.0
-RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy Python dependencies from builder stage
+COPY --from=builder /root/.local /root/.local
 
-COPY . .
+# Make sure scripts in .local are usable:
+ENV PATH=/root/.local/bin:$PATH
 
-# # Generate proto files
-# RUN python generate_protos.py
+# Copy application code
+COPY /app /app/app
+COPY /database /app/database
+COPY /protos /app/protos
 
+# Run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

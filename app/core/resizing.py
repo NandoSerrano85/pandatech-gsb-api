@@ -116,7 +116,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     else:
         current_largest_side_inches = current_height_inches
 
-    if image_type == 'DTF':
+    if image_type == 'DTF' or image_type == 'Sublimation':
         if image_size in SIZING[image_type]:
             target_largest_side_inches = SIZING[image_type][image_size]['height']
         else:
@@ -132,7 +132,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
      # Calculate scale factor
     scale_factor = target_largest_side_inches / current_largest_side_inches
     
-    if image_type == 'DTF' or image_type == 'UVDTF Decal' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2':
+    if image_type == 'DTF' or image_type == 'Sublimation' or image_type == 'UVDTF Decal' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2' or image_type == 'UVDTF Ornament' or image_type == 'UVDTF Logo Cup Care Decal' or image_type == 'UVDTF Logo Bottom Shot Decal':
         # Calculate new dimensions
         new_width_inches = (current_width_inches * scale_factor)
         new_height_inches = (current_height_inches * scale_factor)
@@ -141,8 +141,8 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
         new_width_px = inches_to_pixels(new_width_inches, target_dpi)
         new_height_px = inches_to_pixels(new_height_inches, target_dpi)
     elif image_type == 'MK' or image_type == 'UVDTF Bookmark' or image_type == 'MK Tapered':
-        if current_width_inches < 1:
-            image_type = 'MK Rectangle'
+        # if current_width_inches < 1:
+        #     image_type = 'MK Rectangle'
         current_width = inches_to_pixels(current_width_inches, target_dpi)
         current_height = inches_to_pixels(current_height_inches, target_dpi)
 
@@ -167,7 +167,7 @@ def resize_image_by_inches(image_path, image_type, image_size=None, image=None, 
     resized_img = cv2.resize(img, (new_width_px, new_height_px), interpolation=interpolation)
 
     # Fit the resized images into a canvas
-    if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2':
+    if image_type == 'UVDTF Decal' or image_type == 'UVDTF Bookmark' or image_type == 'UVDTF Lid' or image_type == 'Custom 2x2' or image_type == 'UVDTF Ornament' or image_type == 'UVDTF Logo Cup Care Decal' or image_type == 'UVDTF Logo Bottom Shot Decal':
         return fit_image_to_center_canvas(resized_img, new_width_px, new_height_px, target_dpi, image_type)
     elif image_type == 'MK' or image_type == 'MK Tapered' or image_type == 'MK Rectangle':
         if (new_width_px > new_height_px) and is_new_mk:

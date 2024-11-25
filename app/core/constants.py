@@ -20,6 +20,15 @@ UVDTF_40OZ_BOTTOM_DIR_CLEANUP = '{}UVDTF 40oz/Bottom Cleanup/'.format(ROOT_FOLDE
 UVDTF_40OZ_BOTTOM_DIR = '{}UVDTF 40oz/Bottom/'.format(ROOT_FOLDER)
 UVDTF_MILK_CARTON_DIR_CLEANUP = '{}UVDTF Milk Carton Cleanup/'.format(ROOT_FOLDER)
 UVDTF_MILK_CARTON_DIR = '{}UVDTF Milk Carton/'.format(ROOT_FOLDER)
+UVDTF_ORNAMENT_DIR_CLEANUP = '{}UVDTF Ornament Cleanup/'.format(ROOT_FOLDER)
+UVDTF_ORNAMENT_DIR = '{}UVDTF Ornament/'.format(ROOT_FOLDER)
+UVDTF_LOGO_CUP_CARE_DIR_CLEANUP = '{}UVDTF Logo Cup Care Decal Cleanup/'.format(ROOT_FOLDER)
+UVDTF_LOGO_CUP_CARE_DIR = '{}UVDTF Logo Cup Care Decal/'.format(ROOT_FOLDER)
+UVDTF_LOGO_BOTTOM_SHOT_DIR_CLEANUP = '{}UVDTF Logo Bottom Shot Decal Cleanup/'.format(ROOT_FOLDER)
+UVDTF_LOGO_BOTTOM_SHOT_DIR = '{}UVDTF Logo Bottom Shot Decal/'.format(ROOT_FOLDER)
+UVDTF_25OZ_DIR_CLEANUP = '{}UVDTF 25oz Cleanup/'.format(ROOT_FOLDER)
+UVDTF_25OZ_DIR = '{}UVDTF 25oz/'.format(ROOT_FOLDER)
+
 
 DIR_LIST = {
     'DTF':{
@@ -57,14 +66,30 @@ DIR_LIST = {
     'UVDTF Milk Carton' : {
         'source': UVDTF_MILK_CARTON_DIR_CLEANUP,
         'destination': UVDTF_MILK_CARTON_DIR,
-    }
+    },
+    'UVDTF Ornament': {
+        'source': UVDTF_ORNAMENT_DIR_CLEANUP,
+        'destination': UVDTF_ORNAMENT_DIR,
+    },
+    'UVDTF Logo Cup Care Decal': {
+        'source': UVDTF_LOGO_CUP_CARE_DIR_CLEANUP,
+        'destination': UVDTF_LOGO_CUP_CARE_DIR,
+    },
+    'UVDTF Logo Bottom Shot Decal': {
+        'source': UVDTF_LOGO_BOTTOM_SHOT_DIR_CLEANUP,
+        'destination': UVDTF_LOGO_BOTTOM_SHOT_DIR,
+    },
+    'UVDTF 25oz': {
+        'source': UVDTF_25OZ_DIR_CLEANUP,
+        'destination': UVDTF_25OZ_DIR,
+    },
 }
 MK_DPI = 950
 STD_DPI = 400
 TEXT_AREA_HEIGHT = 0.015
 SHEET_HEIGHT = 120
 
-All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid', 'UVDTF Milk Carton']
+All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid', 'UVDTF Milk Carton', 'MK Tapered', 'UVDTF Ornament', 'Sublimation', 'UVDTF Logo Cup Care Decal', 'UVDTF Logo Bottom Shot Decal', 'UVDTF 25oz']
 
 All_TYPES_DICT = {
     'DTF Transfer': 'DTF',
@@ -76,6 +101,8 @@ All_TYPES_DICT = {
     'UVDTF Bookmark Decal': 'UVDTF Bookmark',
     'UVDTF Lid Decal': 'UVDTF Lid',
     'UVDTF Milk Carton': 'UVDTF Milk Carton',
+    'UVDTF Ornament Decal': 'UVDTF Ornament',
+    'Logo Cup Care Instructions - UVDTF Decal': 'UVDTF Logo Cup Care Decal',
 }
 
 PACK_LISTS = {
@@ -117,6 +144,13 @@ SIZING = {
         'Toddler': { 'height': 6.0 },
         'Pocket': { 'height': 4.0 },
     },
+    'Sublimation': {
+        'Adult+': { 'height': 13.0 },
+        'Adult': { 'height': 11.0 },
+        'Youth': { 'height': 8.0 },
+        'Toddler': { 'height': 6.0 },
+        'Pocket': { 'height': 4.0 },
+    },
     'UVDTF 16oz': { 'width': 9.4, 'height': 4.33 },
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
     'MK': { 'width': 1.3, 'height': 1.75 },
@@ -130,10 +164,15 @@ SIZING = {
     'UVDTF Lid': {'width': 2.75, 'height': 2.75 },
     'UVDTF Milk Carton': {'width': 2.2, 'height': 6.1 },
     'Custom 2x2': {'width': 2, 'height': 2 },
+    'UVDTF Ornament': {'width': 2.5, 'height': 2.5 },
+    'UVDTF Logo Cup Care Decal': {'width': 2.25, 'height': 2.25 },
+    'UVDTF Logo Bottom Shot Decal': {'width': 0.50, 'height': 0.50 },
+    'UVDTF 25oz': { 'width': 9.3, 'height': 8.0 },
 }
 
 CANVAS = {
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
+    'UVDTF Ornament': {'width': 2.5, 'height': 2.5 },
     'MK': { 'width': 1.5, 'height': 2.3 },
     'MK Rectangle': {'width': 1.5, 'height': 2.3},
     'MK Tapered': { 'width': 1.75, 'height': 2.6 },
@@ -142,6 +181,9 @@ CANVAS = {
     'UVDTF Bookmark': {'width': 5.5, 'height': 1.8 },
     'UVDTF Milk Carton': {'width': 2.2, 'height': 6.1 },
     'Custom 2x2': {'width': 2, 'height': 2 },
+    'UVDTF Logo Cup Care Decal': {'width': 2.25, 'height': 2.25 },
+    'UVDTF Logo Bottom Shot Decal': {'width': 0.50, 'height': 0.50 },
+    'UVDTF 25oz': { 'width': 9.3, 'height': 8.0 },
 }
 
 DTF_MAX_SIZE = 'Adult+'
@@ -176,6 +218,11 @@ UVDTF_GANG_SHEET_SPACING_BOOKMARK = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_LID = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_CUSTOM_2X2 = {'width': 0.3, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_MILK_CARTON = {'width': 0.3, 'height': 0.3}
+UVDTF_GANG_SHEET_SPACING_MK_TAPERED = {'width': 0.3, 'height': 0.2}
+UVDTF_GANG_SHEET_SPACING_ORNAMENT = {'width': 0.3, 'height': 0.3}
+UVDTF_GANG_SHEET_SPACING_LOGO_CUP_CARE = {'width': 0.3, 'height': 0.3 }
+UVDTF_GANG_SHEET_SPACING_LOGO_BOTTOM_SHOT = {'width': 0.50, 'height': 0.50 }
+UVDTF_GANG_SHEET_SPACING_25OZ = {'width': 0.40, 'height': 0.40 }
 UVDTF_GANG_SHEET_SPACING = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_SPACING_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_SPACING_DECAL,
@@ -186,6 +233,11 @@ UVDTF_GANG_SHEET_SPACING = {
     'UVDTF Lid': UVDTF_GANG_SHEET_SPACING_LID,
     'Custom 2x2': UVDTF_GANG_SHEET_SPACING_CUSTOM_2X2,
     'UVDTF Milk Carton': UVDTF_GANG_SHEET_SPACING_MILK_CARTON,
+    'MK Tapered': UVDTF_GANG_SHEET_SPACING_MK_TAPERED,
+    'UVDTF Ornament': UVDTF_GANG_SHEET_SPACING_ORNAMENT,
+    'UVDTF Logo Cup Care Decal': UVDTF_GANG_SHEET_SPACING_LOGO_CUP_CARE,
+    'UVDTF Logo Bottom Shot Decal': UVDTF_GANG_SHEET_SPACING_LOGO_BOTTOM_SHOT,
+    'UVDTF 25oz': UVDTF_GANG_SHEET_SPACING_25OZ,
 }
 UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ = 9.4
 UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL = 4.0
@@ -196,6 +248,10 @@ UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK = 5.5
 UVDTF_GANG_SHEET_MAX_HEIGHT_LID = 2.75
 UVDTF_GANG_SHEET_MAX_HEIGHT_CUSTOM_2X2 = 2
 UVDTF_GANG_SHEET_MAX_HEIGHT_MILK_CARTON = 6.1
+UVDTF_GANG_SHEET_MAX_HEIGHT_ORNAMENT = 2.5
+UVDTF_GANG_SHEET_MAX_HEIGHT_LOGO_CUP_CARE = 2.25
+UVDTF_GANG_SHEET_MAX_HEIGHT_LOGO_BOTTOM_SHOT = 0.50
+UVDTF_GANG_SHEET_MAX_HEIGHT_25OZ = 8.0
 UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL,
@@ -206,6 +262,11 @@ UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF Lid': UVDTF_GANG_SHEET_MAX_HEIGHT_LID,
     'Custom 2x2': UVDTF_GANG_SHEET_MAX_HEIGHT_CUSTOM_2X2,
     'UVDTF Milk Carton': UVDTF_GANG_SHEET_MAX_HEIGHT_MILK_CARTON,
+    'MK Tapered': UVDTF_GANG_SHEET_MAX_HEIGHT_MK,
+    'UVDTF Ornament': UVDTF_GANG_SHEET_MAX_HEIGHT_ORNAMENT,
+    'UVDTF Logo Cup Care Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_LOGO_CUP_CARE,
+    'UVDTF Logo Bottom Shot Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_LOGO_BOTTOM_SHOT,
+    'UVDTF 25oz': UVDTF_GANG_SHEET_MAX_HEIGHT_25OZ,
 }
 
 DTF_GANG_SHEET_MAX_WIDTH = 22

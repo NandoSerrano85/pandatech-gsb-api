@@ -11,8 +11,8 @@ from functools import lru_cache
 from concurrent.futures import ThreadPoolExecutor
 from app.core.util import inches_to_pixels, rotate_image_90, save_single_image
 from app.core.constants import (
-    GANG_SHEET_MAX_WIDTH, GANG_SHEET_SPACING, GANG_SHEET_MAX_ROW,
-    GANG_SHEET_MAX_ROW_HEIGHT, GANG_SHEET_MAX_HEIGHT, STD_DPI, TEXT_AREA_HEIGHT
+    GANG_SHEET_MAX_WIDTH, GANG_SHEET_SPACING,
+    GANG_SHEET_MAX_HEIGHT, STD_DPI, TEXT_AREA_HEIGHT
 )
 from app.core.resizing import resize_image_by_inches
 
@@ -45,7 +45,7 @@ def process_image(img_path, image_type, image_size, dpi):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
         if image_type in ['UVDTF 16oz', 'UVDTF 40oz Top', 'UVDTF Bookmark']:
             img = rotate_image_90(img, 1)
-        if image_type == 'DTF':
+        if image_type == 'DTF' or image_type == 'Sublimation':
             img = resize_image_by_inches(img_path, image=img, image_type=image_type, image_size=image_size, target_dpi=dpi)
         return img
     return None
@@ -59,6 +59,12 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
     images_not_found = {}
     has_missing = False
     current_image_amount_left = 0
+    visited = dict()
+    for title, size in zip(image_data['Title'], image_data['Size']):
+        if f"{title} {size}" in visited:
+            visited[f"{title} {size}"] += 1
+        else:
+            visited[f"{title} {size}"] = 1
 
     # Pre-process images in parallel
     with ThreadPoolExecutor() as executor:
@@ -66,7 +72,7 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                            for i in range(len(image_data['Title']))}
         processed_images = {i: future.result() for future, i in future_to_image.items()}
 
-    while current_index != len(image_data['Title'])-1:
+    while len(visited) > 0:
         gang_sheet = np.zeros((height_px, width_px, 4), dtype=np.uint8)
         gang_sheet[:, :, 3] = 0 
         current_x, current_y = 0, 0
@@ -75,16 +81,20 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
 
         for i in range(image_index, len(image_data['Title'])):
             img = processed_images[i]
-            current_index = i
+            key = f"{image_data['Title'][i]} {image_data['Size'][i]}"
+            visited[key] -= 1
+            if visited[key] == 0:
+                del visited[key]
             if image_index != i:
                 current_image_amount_left = 0
             if img is not None:
                 image_size = image_data['Size'][i]
-                spacing_key = image_size if image_type == 'DTF' else image_type
+                spacing_key = image_size if (image_type == 'DTF' or image_type == 'Sublimation') else image_type
                 spacing_width_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['width'], dpi)
                 spacing_height_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['height'], dpi)
 
                 img_height, img_width = img.shape[:2]
+                
                 for amount_index in range(current_image_amount_left, image_data['Total'][i]):
                     if current_x + img_width > width_px:
                         current_x, current_y = 0, current_y + row_height + spacing_width_px
@@ -92,6 +102,10 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                     
                     if current_y + img_height + spacing_height_px > height_px:
                         image_index = i
+                        if key not in visited:
+                            visited[key] = 1
+                        else:
+                            visited[key] += 1
                         current_image_amount_left = amount_index
                         break
                     

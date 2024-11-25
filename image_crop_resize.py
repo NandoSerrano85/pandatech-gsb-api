@@ -18,8 +18,8 @@ from app.core.constants import (
 def main():
     allTypes = All_TYPES
     is_new_mk = False
-    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", 'UVDTF Bookmark', "MK"]
-    allTypes = ["UVDTF Decal"]
+    allTypes = ["DTF", "UVDTF 16oz", "UVDTF Decal", "MK", "Sublimation"]
+    allTypes = ["MK"]
 
     for t in allTypes:
         # dirName = "ParisBerry"
@@ -31,7 +31,7 @@ def main():
         else:
             dirName = "{} Cleanup".format(t)
         # dirName = "Custom Cup Wraps"
-        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered') else STD_DPI
+        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered' or t == "UVDTF Logo Bottom Shot Decal" or t == 'UVDTF Logo Cup Care Decal') else STD_DPI
         print(target_dpi)
         print(t != 'MK' or t != 'MK Tapered')
         folderImagePath = "{}{}".format(ROOT_FOLDER_LOCAL, dirName)
@@ -41,7 +41,7 @@ def main():
         imageSize = None
         images = []
         resized_images = []
-        if t == 'DTF':
+        if t == 'DTF' or t == 'Sublimation':
             imageSize = 'Adult+'
 
         pngFilePath, pngFileName = find_png_files(folderImagePath)

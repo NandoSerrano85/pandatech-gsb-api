@@ -43,23 +43,23 @@ def csv_reader_v1():
     print("All Done!")
 
 def csv_reader_v2():
-    order_range = "5007 - 5012"
-    order_range = "Rush 5015"
-    order_csv = "Product Pick List 5007 - 5012 - Rush 5015.csv"
+    order_range = "5272 - 5286"
+    # order_range = "Order 5209"
+    order_csv = "Product Pick List {} - Original.csv".format(order_range)
     csvFilePath = "{}{}".format(ROOT_FOLDER_LOCAL_CSV, order_csv)
     orderDict = read_local_csv(csvFilePath)
-    # All_TYPES = ["UVDTF Milk Carton"]
+    All_TYPES = ["MK"]
 
     for t in All_TYPES:
         gs_type = None
-        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered') else STD_DPI
+        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered' or t == "UVDTF Logo Bottom Shot Decal" or t == 'UVDTF Logo Cup Care Decal') else STD_DPI
         orders = sort_csv_data_by_type_optimized(orderDict, ROOT_FOLDER_LOCAL, t)
 
         if orders['Type Total'] < 1:
             continue
         output_path = "{}{}/".format(ROOT_FOLDER_LOCAL_OUTPUT,order_range)
         create_folder(output_path)
-        if t == 'DTF':
+        if t == 'DTF' or t == 'Sublimation':
             gs_type = 'DTF'
         elif t == 'Custom 2x2':
             gs_type = 'Custom 2x2'

@@ -6,8 +6,6 @@ python-jose
 opencv-python-headless
 pillow
 statistics
-svgwrite==1.4.3
-python-csv
 ShopifyAPI
 oauth2client
 google-api-python-client
@@ -23,3 +21,4 @@ pydantic
 pydantic-settings
 protobuf-to-pydantic
 pydrive
+demjson3

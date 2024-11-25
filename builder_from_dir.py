@@ -43,16 +43,16 @@ def parris_berry():
     print("All Done!")
 
 def customs():
-    order_range = "Custom Gangsheet"
+    order_range = "AGCM Nov 2024"
     All_TYPES = ['UVDTF 16oz']
-    selected_amount = 200
+    # selected_amount = 200
 
     size = []
 
     for t in All_TYPES:
         target_dpi = STD_DPI if t != 'MK' else MK_DPI
 
-        pngFilePath, pngFileName = find_png_files('{}Custom Cup Wraps'.format(ROOT_FOLDER_LOCAL))
+        pngFilePath, pngFileName = find_png_files('{}Promo/AGCM/UVDTF 16oz'.format(ROOT_FOLDER_LOCAL))
 
         orders = {t: 
                   {
@@ -64,13 +64,11 @@ def customs():
                 }
         for png in pngFilePath:
             orders[t]['Title'].append(png)
-            orders[t]['Size'].append('')
-            orders[t]['Total'].append(1)
+            orders[t]['Size'].append('' if t != 'DTF' else 'Adult')
+            orders[t]['Total'].append(5)
 
         if t == 'DTF':
             gs_type = 'DTF'
-            for n in range(len(pngFilePath)):
-                size.append('Adult')
         elif t == 'Custom 2x2':
             gs_type = 'Custom 2x2'
         else:

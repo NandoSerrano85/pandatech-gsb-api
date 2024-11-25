@@ -1,4 +1,4 @@
-version: '3.8'
+# Docker Compose configuration
 
 services:
   fastapi:
@@ -13,8 +13,13 @@ services:
       - DATABASE_URL=postgresql://fserrano:F3rn4nd0!!@db:5432/appdb
       - JWT_SECRET=pandatech-jwt-secret
     volumes:
-      - .:/app
+      - ./app:/app
       - /Users/fserrano/Desktop/:/app/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   grpc:
     build:
@@ -28,10 +33,15 @@ services:
       - DATABASE_URL=postgresql://fserrano:F3rn4nd0!!@db:5432/appdb
       - JWT_SECRET=pandatech-jwt-secret
     volumes:
-      - .:/app
+      - ./app:/app
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   db:
-    image: postgres:13
+    image: postgres:13-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -40,6 +50,11 @@ services:
       - POSTGRES_DB=appdb
     ports:
       - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   frontend:
     build:
@@ -49,11 +64,15 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     environment:
       - NODE_ENV=development
     depends_on:
       - fastapi
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
 volumes:
   postgres_data:
