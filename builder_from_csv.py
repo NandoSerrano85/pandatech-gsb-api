@@ -1,5 +1,6 @@
 from app.core.gang_sheet_builder import create_gang_sheet
 from app.core.gang_sheet_builder_v2 import create_gang_sheets, process_gang_sheets_concurrently
+from app.core.gang_sheet_builder_v3 import create_gang_sheets_v3
 from app.core.util import (
     read_local_csv,
     select_csv_data_by_type,
@@ -43,16 +44,17 @@ def csv_reader_v1():
     print("All Done!")
 
 def csv_reader_v2():
-    order_range = "5272 - 5286"
+    order_range = "5302 - 5371"
     # order_range = "Order 5209"
-    order_csv = "Product Pick List {} - Original.csv".format(order_range)
+    order_csv = "Product Pick List {} - DTF.csv".format(order_range)
+    order_range = "Current DTF 2"
     csvFilePath = "{}{}".format(ROOT_FOLDER_LOCAL_CSV, order_csv)
     orderDict = read_local_csv(csvFilePath)
-    All_TYPES = ["MK"]
+    # All_TYPES = ["DTF"]
 
     for t in All_TYPES:
         gs_type = None
-        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered' or t == "UVDTF Logo Bottom Shot Decal" or t == 'UVDTF Logo Cup Care Decal') else STD_DPI
+        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered' or t == "UVDTF Logo Bottom Shot Decal" or t == 'UVDTF Logo Cup Care Decal' or t == 'UVDTF Shot') else STD_DPI
         orders = sort_csv_data_by_type_optimized(orderDict, ROOT_FOLDER_LOCAL, t)
 
         if orders['Type Total'] < 1:
@@ -66,7 +68,35 @@ def csv_reader_v2():
         else:
             gs_type = 'UVDTF'
             
-        create_gang_sheets(image_data=orders[t], image_type=t, gang_sheet_type=gs_type, output_path=output_path, order_range=order_range, total_images=orders['Type Total'],  dpi=target_dpi)
+        create_gang_sheets(image_data=orders[t], image_type=t, gang_sheet_type=gs_type, output_path=output_path, order_range=order_range, total_images=orders['Type Total'],  dpi=96)
+    print('All Done!')
+
+def csv_reader_v3():
+    order_range = "5302 - 5371"
+    # order_range = "Order 5209"
+    order_csv = "Product Pick List {} - DTF.csv".format(order_range)
+    order_range = "V3 DTF Test"
+    csvFilePath = "{}{}".format(ROOT_FOLDER_LOCAL_CSV, order_csv)
+    orderDict = read_local_csv(csvFilePath)
+    # All_TYPES = ["DTF"]
+
+    for t in All_TYPES:
+        gs_type = None
+        target_dpi = MK_DPI if (t == 'MK' or t == 'MK Tapered' or t == "UVDTF Logo Bottom Shot Decal" or t == 'UVDTF Logo Cup Care Decal' or t == 'UVDTF Shot') else STD_DPI
+        orders = sort_csv_data_by_type_optimized(orderDict, ROOT_FOLDER_LOCAL, t)
+
+        if orders['Type Total'] < 1:
+            continue
+        output_path = "{}{}/".format(ROOT_FOLDER_LOCAL_OUTPUT,order_range)
+        create_folder(output_path)
+        if t == 'DTF' or t == 'Sublimation':
+            gs_type = 'DTF'
+        elif t == 'Custom 2x2':
+            gs_type = 'Custom 2x2'
+        else:
+            gs_type = 'UVDTF'
+            
+        create_gang_sheets_v3(image_data=orders[t], image_type=t, gang_sheet_type=gs_type, output_path=output_path, order_range=order_range, total_images=orders['Type Total'],  dpi=target_dpi)
     print('All Done!')
 
 def csv_reader_v2_5():
@@ -96,4 +126,5 @@ def csv_reader_v2_5():
 
 def main():
     csv_reader_v2()
+    # csv_reader_v3()
 main()

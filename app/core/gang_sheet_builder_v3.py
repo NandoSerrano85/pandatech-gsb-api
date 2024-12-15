@@ -25,7 +25,7 @@ def cached_inches_to_pixels(inches, dpi):
 def add_text_to_gang_sheet(gang_sheet, text, width_pixels, max_height, dpi):
     text_height = int(max_height * TEXT_AREA_HEIGHT)
     font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = 2.0
+    font_scale = 6.0 if dpi == STD_DPI else int(6.0 * 2.5)
     text_color = (0, 0, 0, 255)
     font_thickness = max(int(font_scale * 3), 2)
     
@@ -50,7 +50,46 @@ def process_image(img_path, image_type, image_size, dpi):
         return img
     return None
 
-def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, order_range, total_images, dpi=300, text='Single '):
+def rotate_image(img_path, image_type, image_size, dpi):
+    """
+    Rotate DTF image 90 degrees and return both original and rotated images.
+    
+    :param img: Original image
+    :return: Tuple of (original image, rotated image)
+    """
+    if os.path.exists(img_path):
+        img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            return None
+        img = resize_image_by_inches(img_path, image=img, image_type=image_type, image_size=image_size, target_dpi=dpi)
+        rotated_img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        return rotated_img
+    return None
+
+def can_fit_image(gang_sheet, img, current_x, current_y, width_px, spacing_width_px, spacing_height_px):
+    """
+    Check if an image can fit in the current gang sheet position.
+    
+    :param gang_sheet: Current gang sheet
+    :param img: Image to be placed
+    :param current_x: Current x position
+    :param current_y: Current y position
+    :param width_px: Maximum sheet width
+    :param spacing_width_px: Horizontal spacing
+    :param spacing_height_px: Vertical spacing
+    :return: Boolean indicating if image can fit
+    """
+    img_height, img_width = img.shape[:2]
+    
+    # Check horizontal space
+    if current_x + img_width > width_px:
+        # If not enough horizontal space, move to next row
+        current_x, current_y = 0, current_y + img_height + spacing_height_px
+    
+    # Check if image fits vertically
+    return current_y + img_height + spacing_height_px <= gang_sheet.shape[0]
+
+def create_gang_sheets_v3(image_data, image_type, gang_sheet_type, output_path, order_range, total_images, dpi=300, text='Single '):
     # Pre-calculate common values
     width_px = cached_inches_to_pixels(GANG_SHEET_MAX_WIDTH[gang_sheet_type], dpi)
     height_px = cached_inches_to_pixels(GANG_SHEET_MAX_HEIGHT[gang_sheet_type], dpi)
@@ -60,13 +99,17 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
     has_missing = False
     current_image_amount_left = 0
     visited = dict()
+    
+    # Track which original images need backtracking
+    backtrack_candidates = {}
+    
     for title, size in zip(image_data['Title'], image_data['Size']):
         if f"{title} {size}" in visited:
             visited[f"{title} {size}"] += 1
         else:
             visited[f"{title} {size}"] = 1
 
-    # Pre-process images in parallel
+    # Pre-process images in parallel with optional rotation
     with ThreadPoolExecutor() as executor:
         future_to_image = {executor.submit(process_image, image_data['Title'][i], image_type, image_data['Size'][i], dpi): i 
                            for i in range(len(image_data['Title']))}
@@ -80,26 +123,83 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
         gang_sheet, current_y = add_text_to_gang_sheet(gang_sheet, f"{order_range} {image_type} {text}- part{part}", width_px, height_px, dpi)
 
         for i in range(image_index, len(image_data['Title'])):
-            img = processed_images[i]
+            # Get both original and rotated images if applicable
+            original_img = processed_images[i]['original']
+            rotated_img = processed_images[i]['rotated']
+            
             key = f"{image_data['Title'][i]} {image_data['Size'][i]}"
             visited[key] -= 1
             if visited[key] == 0:
                 del visited[key]
+            
             if image_index != i:
                 current_image_amount_left = 0
-            if img is not None:
-                image_size = image_data['Size'][i]
-                spacing_key = image_size if (image_type == 'DTF' or image_type == 'Sublimation') else image_type
-                spacing_width_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['width'], dpi)
-                spacing_height_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['height'], dpi)
 
-                img_height, img_width = img.shape[:2]
+            # If no image, mark as missing
+            if original_img is None:
+                has_missing = True
+                image_name = os.path.splitext(os.path.basename(image_data['Title'][i]))[0]
+                images_not_found[image_name] = {'Total': image_data['Total'][i], 'Size': image_data['Size'][i]}
+                image_index = i + 1
+                current_image_amount_left = 0
+                continue
+
+            # Set spacing based on image type and size
+            image_size = image_data['Size'][i]
+            spacing_key = image_size if (image_type == 'DTF' or image_type == 'Sublimation') else image_type
+            spacing_width_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['width'], dpi)
+            spacing_height_px = cached_inches_to_pixels(GANG_SHEET_SPACING[gang_sheet_type][spacing_key]['height'], dpi)
+
+            # Try both original and rotated images for DTF
+            for img_variants in ([original_img, rotated_img] if image_type == 'DTF' and rotated_img is not None else [original_img]):
+                if img_variants is None:
+                    continue
+                if image_type == 'DTF':
+                    img_variant = img_variants[1] if not can_fit_image(gang_sheet, img_variants[0], current_x, current_y, width_px, spacing_width_px, spacing_height_px) else img_variants[0]
+                    img_height, img_width = img_variant.shape[:2]
+                else:
+                    img_variant = img_variants
+                    img_height, img_width = img_variant.shape[:2]
                 
+                # Backtracking to fit more images
                 for amount_index in range(current_image_amount_left, image_data['Total'][i]):
-                    if current_x + img_width > width_px:
-                        current_x, current_y = 0, current_y + row_height + spacing_width_px
+                    # Check if the current image variant can fit
+                    if can_fit_image(gang_sheet, img_variant, current_x, current_y, width_px, spacing_width_px, spacing_height_px):
+                        # Place the image
+                        print(image_data['Title'][i])
+                        gang_sheet[current_y:current_y+img_height, current_x:current_x+img_width] = img_variant
+                        current_x += img_width + spacing_width_px
+                        row_height = max(row_height, img_height)
+                        
+                        # Reset when image fits
+                        if row_height > 0 and current_x + img_width > width_px:
+                            current_x, current_y = 0, current_y + row_height + spacing_height_px
+                            row_height = 0
+                        
+                        break
+                    else:
+                        # Try next row
+                        current_x, current_y = 0, current_y + row_height + spacing_height_px
                         row_height = 0
+                        
+                        # If still can't fit, mark for backtracking
+                        if not can_fit_image(gang_sheet, img_variant, current_x, current_y, width_px, spacing_width_px, spacing_height_px):
+                            # Store for potential future sheet
+                            if key not in backtrack_candidates:
+                                backtrack_candidates[key] = {
+                                    'img': img_variant, 
+                                    'total_remaining': image_data['Total'][i] - amount_index,
+                                    'size': image_data['Size'][i]
+                                }
+                            image_index = i
+                            if key not in visited:
+                                visited[key] = 1
+                            else:
+                                visited[key] += 1
+                            current_image_amount_left = amount_index
+                            break
                     
+                    # Stop if sheet is full
                     if current_y + img_height + spacing_height_px > height_px:
                         image_index = i
                         if key not in visited:
@@ -108,19 +208,11 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
                             visited[key] += 1
                         current_image_amount_left = amount_index
                         break
-                    
-                    gang_sheet[current_y:current_y+img_height, current_x:current_x+img_width] = img
-                    current_x += img_width + spacing_width_px
-                    row_height = max(row_height, img_height)
                 
+                # Break outer loop if sheet is full
                 if current_y + img_height + spacing_height_px > height_px:
                     break
-            else:
-                has_missing = True
-                image_name = os.path.splitext(os.path.basename(image_data['Title'][i]))[0]
-                images_not_found[image_name] = {'Total': image_data['Total'][i], 'Size': image_data['Size'][i]}
-                image_index = i + 1
-                current_image_amount_left = 0
+
         # Save the gang sheet
         alpha_channel = gang_sheet[:,:,3]
         rows, cols = np.any(alpha_channel, axis=1), np.any(alpha_channel, axis=0)
@@ -137,9 +229,19 @@ def create_gang_sheets(image_data, image_type, gang_sheet_type, output_path, ord
             part += 1
         else:
             print(f"Warning: Sheet {part} is empty (all transparent). Skipping.")
-       
-        
 
+    # Handle backtracking candidates
+    if backtrack_candidates:
+        # Add backtracking info to missing images
+        for key, candidate in backtrack_candidates.items():
+            image_name = os.path.splitext(os.path.basename(key))[0]
+            images_not_found[image_name] = {
+                'Total': candidate['total_remaining'], 
+                'Size': candidate['size']
+            }
+            has_missing = True
+
+    # Write missing images to CSV if any
     if has_missing:
         with open(f"{output_path}/{image_type}_missing.csv", 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)

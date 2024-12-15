@@ -89,7 +89,24 @@ STD_DPI = 400
 TEXT_AREA_HEIGHT = 0.015
 SHEET_HEIGHT = 120
 
-All_TYPES = ['DTF', 'UVDTF 16oz', 'UVDTF Decal', 'MK', 'UVDTF 40oz Top', 'UVDTF 40oz Bottom', 'UVDTF Bookmark', 'UVDTF Lid', 'UVDTF Milk Carton', 'MK Tapered', 'UVDTF Ornament', 'Sublimation', 'UVDTF Logo Cup Care Decal', 'UVDTF Logo Bottom Shot Decal', 'UVDTF 25oz']
+All_TYPES = [
+    'DTF', 
+    'UVDTF 16oz', 
+    'UVDTF Decal', 
+    'MK', 
+    'UVDTF 40oz Top', 
+    'UVDTF 40oz Bottom', 
+    'UVDTF Bookmark', 
+    'UVDTF Lid', 
+    'UVDTF Milk Carton', 
+    'MK Tapered', 
+    'UVDTF Ornament', 
+    'Sublimation', 
+    'UVDTF Logo Cup Care Decal', 
+    'UVDTF Logo Bottom Shot Decal', 
+    'UVDTF 25oz', 
+    "UVDTF Shot",
+    ]
 
 All_TYPES_DICT = {
     'DTF Transfer': 'DTF',
@@ -168,12 +185,14 @@ SIZING = {
     'UVDTF Logo Cup Care Decal': {'width': 2.25, 'height': 2.25 },
     'UVDTF Logo Bottom Shot Decal': {'width': 0.50, 'height': 0.50 },
     'UVDTF 25oz': { 'width': 9.3, 'height': 8.0 },
+    "UVDTF Shot": { 'width': 1.3, 'height': 1.75 },
 }
 
 CANVAS = {
     'UVDTF Decal': { 'height': 4.0, 'width': 4.0 },
     'UVDTF Ornament': {'width': 2.5, 'height': 2.5 },
     'MK': { 'width': 1.5, 'height': 2.3 },
+    'UVDTF Shot': { 'width': 1.5, 'height': 2.3 },
     'MK Rectangle': {'width': 1.5, 'height': 2.3},
     'MK Tapered': { 'width': 1.75, 'height': 2.6 },
     'UVDTF 40oz Bottom': {'width': 10.3, 'height': 3.58, 'arch': 3},
@@ -212,6 +231,7 @@ UVDTF_GANG_SHEET_MAX_ROW = {
 UVDTF_GANG_SHEET_SPACING_16OZ = {'width': 0.26, 'height': 0.5}
 UVDTF_GANG_SHEET_SPACING_DECAL = {'width': 0.6, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_MK = {'width': 0.0, 'height': 0.0}
+UVDTF_GANG_SHEET_SPACING_SHOT_GLASS = {'width': 0.0, 'height': 0.0}
 UVDTF_GANG_SHEET_SPACING_40OZ_TOP = {'width': 0.4, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_40OZ_BOTTOM  = {'width': 0.4, 'height': 0.3}
 UVDTF_GANG_SHEET_SPACING_BOOKMARK = {'width': 0.3, 'height': 0.3}
@@ -227,6 +247,7 @@ UVDTF_GANG_SHEET_SPACING = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_SPACING_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_SPACING_DECAL,
     'MK': UVDTF_GANG_SHEET_SPACING_MK,
+    'UVDTF Shot': UVDTF_GANG_SHEET_SPACING_SHOT_GLASS,
     'UVDTF 40oz Top': UVDTF_GANG_SHEET_SPACING_40OZ_TOP,
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_SPACING_40OZ_BOTTOM,
     'UVDTF Bookmark': UVDTF_GANG_SHEET_SPACING_BOOKMARK,
@@ -256,6 +277,7 @@ UVDTF_GANG_SHEET_MAX_HEIGHT = {
     'UVDTF 16oz': UVDTF_GANG_SHEET_MAX_HEIGHT_16OZ,
     'UVDTF Decal': UVDTF_GANG_SHEET_MAX_HEIGHT_DECAL,
     'MK': UVDTF_GANG_SHEET_MAX_HEIGHT_MK,
+    'UVDTF Shot': UVDTF_GANG_SHEET_MAX_HEIGHT_MK,
     'UVDTF 40oz Top':UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_TOP,
     'UVDTF 40oz Bottom': UVDTF_GANG_SHEET_MAX_HEIGHT_40OZ_BOTTOM,
     'UVDTF Bookmark': UVDTF_GANG_SHEET_MAX_HEIGHT_BOOKMARK,
